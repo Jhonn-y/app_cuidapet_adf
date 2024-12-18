@@ -7,23 +7,20 @@ import 'package:shelf_router/shelf_router.dart';
 
 // Configure routes.
 final _router = Router()
-  ..get('/', _rootHandler)
-  ..get('/echo/<message>', _echoHandler);
+  ..get('/', _rootHandler);
 
 Response _rootHandler(Request req) {
   return Response.ok('Hello, World!\n');
 }
 
-Response _echoHandler(Request request) {
-  final message = request.params['message'];
-  return Response.ok('$message\n');
-}
-
 void main(List<String> args) async {
   // Use any available host or container IP (usually `0.0.0.0`).
   final ip = InternetAddress.anyIPv4;
+
+
+  
   final appConfig = ApplicationConfig();
-  appConfig.loadConfigApplication();
+  appConfig.loadConfigApplication(_router);
   // Configure a pipeline that logs requests.
   final handler =
       Pipeline().addMiddleware(logRequests()).addHandler(_router.call);
