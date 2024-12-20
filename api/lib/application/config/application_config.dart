@@ -12,15 +12,13 @@ import '../logger/logger.dart';
 
 
 class ApplicationConfig {
-  late DotEnv env;
+  final env = DotEnv(includePlatformEnvironment: true)..load();
   Future<void> loadConfigApplication(Router router) async {
-    await _loadEnv();
-    _loadDatabaseConfig();
     _configLogger();
+    _loadDatabaseConfig();
     _loadDependecies();
     _loadRoutersConfigure(router);
   }
-  Future<void> _loadEnv() async => env = DotEnv(includePlatformEnvironment: true)..load();
   
   void _loadDatabaseConfig() {
     final databaseConfig = DatabaseConnectionConfiguration(
@@ -32,9 +30,10 @@ class ApplicationConfig {
         GetIt.I.registerSingleton(databaseConfig);
   }
   
-  void _configLogger() => GetIt.I.registerLazySingleton<ILogger>(()=> Logger());
+  void _configLogger() => GetIt.I.registerLazySingleton<ILogger>(() => Logger());
   
   void _loadDependecies() => configureDependencies();
   
   void _loadRoutersConfigure(Router router) => RouterConfigure(router).configure();
+
 }

@@ -1,7 +1,9 @@
 
 import 'package:cuidapet_api/application/logger/i_logger.dart';
+import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart' as log;
 
+@injectable
 class Logger implements ILogger {
 
   final _logger = log.Logger();

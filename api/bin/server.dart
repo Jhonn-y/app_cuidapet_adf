@@ -1,6 +1,10 @@
 import 'dart:io';
 
 import 'package:cuidapet_api/application/config/application_config.dart';
+import 'package:cuidapet_api/application/middlewares/cors/cors_middlewares.dart';
+import 'package:cuidapet_api/application/middlewares/defaultContentType/default_content_type.dart';
+import 'package:cuidapet_api/application/middlewares/security/security_middleware.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -18,12 +22,16 @@ void main(List<String> args) async {
   final ip = InternetAddress.anyIPv4;
 
 
-  
   final appConfig = ApplicationConfig();
   appConfig.loadConfigApplication(_router);
   // Configure a pipeline that logs requests.
+  final getIt = GetIt.I;
   final handler =
-      Pipeline().addMiddleware(logRequests()).addHandler(_router.call);
+      Pipeline()
+      .addMiddleware(SecurityMiddleware(getIt.get()).handler)
+      .addMiddleware(CorsMiddlewares().handler)
+      .addMiddleware(DefaultContentType(contentType: 'application/json;charset=utf-8').handler)
+      .addMiddleware(logRequests()).addHandler(_router.call);
 
   // For running in containers, we respect the PORT environment variable.
   final port = int.parse(Platform.environment['PORT'] ?? '8080');

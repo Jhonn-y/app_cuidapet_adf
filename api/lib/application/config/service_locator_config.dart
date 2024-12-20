@@ -4,7 +4,7 @@ import 'package:injectable/injectable.dart';
 
 import 'service_locator_config.config.dart';
 final getIt = GetIt.instance;  
-  
+
 @InjectableInit(  
   initializerName: 'init', // default  
   preferRelativeImports: true, // default  
