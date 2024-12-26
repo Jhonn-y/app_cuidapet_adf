@@ -5,3 +5,4 @@ mysql_data
 .env
 service_locator_config.config.dart
 controller_route.g.dart
+user_auth_controller.g.dart

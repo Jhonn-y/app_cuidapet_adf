@@ -3,7 +3,6 @@ import 'package:cuidapet_api/application/database/i_database_conn.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mysql1/mysql1.dart';
 
-@injectable
 @LazySingleton(as: IDatabaseConn)
 class DatabaseConnImp implements IDatabaseConn {
   final DatabaseConnectionConfiguration _configuration;
