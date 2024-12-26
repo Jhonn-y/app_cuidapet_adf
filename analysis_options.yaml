@@ -13,6 +13,7 @@ analyzer:
     avoid_function_literals_in_foreach_calls: ignore
     collection_methods_unrelated_type: ignore
     unrelated_type_equality_checks: ignore
+    unused_catch_clause: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

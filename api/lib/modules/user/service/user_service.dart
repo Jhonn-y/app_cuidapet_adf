@@ -25,4 +25,8 @@ class UserService implements IUserService {
 
     return userRepo.createUser(userEntity);
   }
+  
+  @override
+  Future loginWithEmailPassword(String email, String password, bool supplierUser) 
+  => userRepo.loginWithEmailPassword(email, password, supplierUser);
 }
