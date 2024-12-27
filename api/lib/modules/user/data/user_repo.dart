@@ -97,24 +97,27 @@ class UserRepo implements IUserRepo {
       conn?.close();
     }
   }
-  
+
   @override
-  Future loginWithSocialKey(String email, String socialKey, String socialType) async {
+  Future loginWithSocialKey(
+      String email, String socialKey, String socialType) async {
     MySqlConnection? conn;
 
     try {
       conn = await connection.openConnection();
 
-      final result = await conn.query('select * from usuario where email = ?', [email]);
-      
+      final result =
+          await conn.query('select * from usuario where email = ?', [email]);
+
       if (result.isEmpty) {
         throw UserNotFoundException();
-      }else{
+      } else {
         final dataMysql = result.first;
-        if(dataMysql['social_id']== null || 
-          dataMysql['social_id'] != socialKey){
-          await conn.query(' update usuario set social_id = ?, tipo_cadastro = ? where id = ?',
-          [socialKey,socialType,dataMysql['id']]);
+        if (dataMysql['social_id'] == null ||
+            dataMysql['social_id'] != socialKey) {
+          await conn.query(
+              ' update usuario set social_id = ?, tipo_cadastro = ? where id = ?',
+              [socialKey, socialType, dataMysql['id']]);
         }
         return User(
           id: dataMysql['id'] as int,
@@ -134,6 +137,44 @@ class UserRepo implements IUserRepo {
     } finally {
       conn?.close();
     }
-    
+  }
+
+  @override
+  Future updateUserDeviceTokenAndRefreshToken(User user) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+
+      final setParams = {};
+
+      if (user.iosToken != null) {
+        setParams.putIfAbsent('ios_token', () => user.iosToken);
+      } else {
+        setParams.putIfAbsent('android_token', () => user.androidToken);
+      }
+
+      final query = '''
+        update usuario
+        set 
+          ${setParams.keys.elementAt(0)}
+          refresh_token = ?
+        where id = ?
+      ''';
+
+      await conn.query(query, [
+        setParams.values.elementAt(0),
+        user.refreshToken!,
+        user.id!,
+      ]);
+
+
+    } on MySqlException catch (e){
+      logger.error('Erro ao atualizar token e refresh token', e);
+      throw DatabaseException();
+    }
+    finally {
+      await conn?.close();
+    }
   }
 }
