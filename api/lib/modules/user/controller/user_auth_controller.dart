@@ -10,6 +10,7 @@ import 'package:cuidapet_api/entities/user.dart';
 import 'package:cuidapet_api/modules/user/service/i_user_service.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_confirm_input_model.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_login_view_model.dart';
+import 'package:cuidapet_api/modules/user/view_models/user_refresh_token_input_model.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_save_input_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shelf/shelf.dart';
@@ -73,21 +74,43 @@ class UserAuthController {
     }
   }
 
-  @Route('PATCH','/confirm')
+  @Route('PATCH', '/confirm')
   Future<Response> confirmUser(Request request) async {
     final user = int.parse(request.headers['user']!);
     final supplier = int.tryParse(request.headers['supplier'] ?? '');
-    final token = JwtHelper.generateJwt(user, supplier).replaceAll('Bearer', '');
+    final token =
+        JwtHelper.generateJwt(user, supplier).replaceAll('Bearer', '');
 
-    final inputModel = UserConfirmInputModel(userID: user, accessToken: token, data: await request.readAsString());
-    
+    final inputModel = UserConfirmInputModel(
+        userID: user, accessToken: token, data: await request.readAsString());
+
     final refreshToken = await userService.confirmLogin(inputModel);
 
     return Response.ok(jsonEncode(
-    {
-      'access_token': 'Bearer $token',
-      'refresh_token': refreshToken
-    }));
+        {'access_token': 'Bearer $token', 'refresh_token': refreshToken}));
+  }
+
+  @Route.put('/refresh/')
+  Future<Response> refreshToken(Request request) async {
+    try {
+  final user = int.parse(request.headers['user']!);
+  final supplier = int.tryParse(request.headers['supplier'] ?? '');
+  final accesToken = request.headers['access_token']!;
+  final model = UserRefreshTokenInputModel(
+      user: user,
+      supplier: supplier,
+      accessToken: accesToken,
+      dataRequest: await request.readAsString());
+  
+  final userRefreshToken = await userService.refreshToken(model);
+  
+  return Response.ok(jsonEncode({
+    'access_token': userRefreshToken.accessToken,
+    'refresh_token': userRefreshToken.refreshToken
+  }));
+} catch (e) {
+  return Response.internalServerError();
+}
   }
 
   Router get router => _$UserAuthControllerRouter(this);

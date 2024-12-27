@@ -167,13 +167,27 @@ class UserRepo implements IUserRepo {
         user.refreshToken!,
         user.id!,
       ]);
-
-
-    } on MySqlException catch (e){
+    } on MySqlException catch (e) {
       logger.error('Erro ao atualizar token e refresh token', e);
       throw DatabaseException();
+    } finally {
+      await conn?.close();
     }
-    finally {
+  }
+
+  @override
+  Future updateRefreshToken(User user) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+
+      await conn.query('update usuario set refresh_token = ? where id = ?', [
+        user.refreshToken!,
+        user.id!,
+      ]);
+    } catch (e) {
+    } finally {
       await conn?.close();
     }
   }

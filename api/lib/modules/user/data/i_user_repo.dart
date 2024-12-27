@@ -5,5 +5,6 @@ abstract class IUserRepo {
   Future loginWithEmailPassword(String email, String password, bool supplierUser);
   Future loginWithSocialKey(String email, String socialKey,String socialType);
   Future updateUserDeviceTokenAndRefreshToken(User user);
+  Future updateRefreshToken(User user);
 
 }
