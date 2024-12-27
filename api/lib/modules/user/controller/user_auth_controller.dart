@@ -33,10 +33,14 @@ class UserAuthController {
       User user;
 
       if (!loginViewModel.socialLogin) {
-        user = await userService.loginWithEmailPassword(
-            loginViewModel.login, loginViewModel.password, loginViewModel.supplierUser);
+        user = await userService.loginWithEmailPassword(loginViewModel.login,
+            loginViewModel.password, loginViewModel.supplierUser);
       } else {
-        user = User();
+        user = await userService.loginWithSocialKey(
+            loginViewModel.login,
+            loginViewModel.avatar,
+            loginViewModel.socialType,
+            loginViewModel.socialKey);
       }
 
       return Response.ok(jsonEncode(

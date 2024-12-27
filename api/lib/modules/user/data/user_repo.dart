@@ -97,4 +97,43 @@ class UserRepo implements IUserRepo {
       conn?.close();
     }
   }
+  
+  @override
+  Future loginWithSocialKey(String email, String socialKey, String socialType) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+
+      final result = await conn.query('select * from usuario where email = ?', [email]);
+      
+      if (result.isEmpty) {
+        throw UserNotFoundException();
+      }else{
+        final dataMysql = result.first;
+        if(dataMysql['social_id']== null || 
+          dataMysql['social_id'] != socialKey){
+          await conn.query(' update usuario set social_id = ?, tipo_cadastro = ? where id = ?',
+          [socialKey,socialType,dataMysql['id']]);
+        }
+        return User(
+          id: dataMysql['id'] as int,
+          email: dataMysql['email'],
+          registerType: dataMysql['tipo_cadastro'],
+          iosToken: (dataMysql['ios_token'] as Blob?)?.toString(),
+          androidToken: (dataMysql['android_token'] as Blob?)?.toString(),
+          refreshToken: (dataMysql['refresh_token'] as Blob?)?.toString(),
+          imageAvatar: (dataMysql['img_avatar'] as Blob?)?.toString(),
+          supplierID: dataMysql['fornecedor_id'] as int,
+          socialKey: dataMysql['social_id'] as String,
+        );
+      }
+    } on MySqlException catch (e) {
+      logger.error('erro ao realizar login', e);
+      throw DatabaseException(message: e.message);
+    } finally {
+      conn?.close();
+    }
+    
+  }
 }
