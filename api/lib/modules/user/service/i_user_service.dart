@@ -4,6 +4,7 @@ import 'package:cuidapet_api/modules/user/view_models/update_url_avatar_model.da
 import 'package:cuidapet_api/modules/user/view_models/user_confirm_input_model.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_refresh_token_input_model.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_save_input_model.dart';
+import 'package:cuidapet_api/modules/user/view_models/user_update_device_token_model.dart';
 
 abstract class IUserService {
 
@@ -14,5 +15,6 @@ abstract class IUserService {
   Future<RefreshTokenViewModel> refreshToken(UserRefreshTokenInputModel model);
   Future<User> findByID(int id);
   Future<User> updateAvatar(UpdateUrlAvatarModel model);
+  Future<void> updateDeviceToken(UserUpdateDeviceTokenModel model);
 
 }

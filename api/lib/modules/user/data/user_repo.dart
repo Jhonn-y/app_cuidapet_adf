@@ -6,6 +6,7 @@ import 'package:cuidapet_api/application/helpers/crypt_helper.dart';
 import 'package:cuidapet_api/application/logger/i_logger.dart';
 import 'package:cuidapet_api/entities/user.dart';
 import 'package:cuidapet_api/modules/user/data/i_user_repo.dart';
+import 'package:cuidapet_api/modules/user/view_models/platform_enum.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mysql1/mysql1.dart';
 
@@ -232,13 +233,37 @@ class UserRepo implements IUserRepo {
     MySqlConnection? conn;
     try {
       conn = await connection.openConnection();
-      
 
-      await conn.query('update usuario set img_avatar = ? where id = ?',[urlAvatar,id]);
+      await conn.query(
+          'update usuario set img_avatar = ? where id = ?', [urlAvatar, id]);
+    } on MySqlException catch (e) {
+      logger.error('Erro ao atualizar avatar do usuario', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<void> updateDeviceToken(
+      int id, String deviceToken, PlatformEnum platform) async {
+    MySqlConnection? conn;
+    try {
+      conn = await connection.openConnection();
+      var setToken = '';
+
+      if (platform == PlatformEnum.ios) {
+        setToken = 'ios_token = ?';
+      } else {
+        setToken = 'android_token = ?';
+      }
+
+      final query = 'update usuario set $setToken where id = ?';
+      await conn.query(query, [deviceToken, id]);
 
 
     } on MySqlException catch (e) {
-      logger.error('Erro ao atualizar avatar do usuario', e);
+      logger.error('Erro ao atualizar device token do usuario', e);
       throw DatabaseException();
     } finally {
       await conn?.close();

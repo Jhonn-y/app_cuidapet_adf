@@ -11,6 +11,7 @@ import 'package:cuidapet_api/modules/user/view_models/update_url_avatar_model.da
 import 'package:cuidapet_api/modules/user/view_models/user_confirm_input_model.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_refresh_token_input_model.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_save_input_model.dart';
+import 'package:cuidapet_api/modules/user/view_models/user_update_device_token_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
 
@@ -64,61 +65,66 @@ class UserService implements IUserService {
   Future<String> confirmLogin(UserConfirmInputModel inputModel) async {
     final refreshToken = JwtHelper.refreshToken(inputModel.accessToken);
     final user = User(
-      id: inputModel.userID,
-      refreshToken: refreshToken,
-      iosToken: inputModel.iosDeviceToken,
-      androidToken: inputModel.androidDeviceToken
-    );
+        id: inputModel.userID,
+        refreshToken: refreshToken,
+        iosToken: inputModel.iosDeviceToken,
+        androidToken: inputModel.androidDeviceToken);
 
     await userRepo.updateUserDeviceTokenAndRefreshToken(user);
     return refreshToken;
   }
 
   @override
-  Future<RefreshTokenViewModel> refreshToken(UserRefreshTokenInputModel model) async {
+  Future<RefreshTokenViewModel> refreshToken(
+      UserRefreshTokenInputModel model) async {
     _validateRefreshToken(model);
 
     final newAccessToken = JwtHelper.generateJwt(model.user, model.supplier);
-    final newRefreshToken = JwtHelper.refreshToken(newAccessToken.replaceAll('Bearer', ' '));
+    final newRefreshToken =
+        JwtHelper.refreshToken(newAccessToken.replaceAll('Bearer', ' '));
 
-    final user = User(
-      id:model.user,
-      refreshToken: newRefreshToken
-    );
+    final user = User(id: model.user, refreshToken: newRefreshToken);
 
     await userRepo.updateRefreshToken(user);
-    return RefreshTokenViewModel(accessToken: newAccessToken, refreshToken: newRefreshToken);
+    return RefreshTokenViewModel(
+        accessToken: newAccessToken, refreshToken: newRefreshToken);
   }
-  
+
   void _validateRefreshToken(UserRefreshTokenInputModel model) {
     try {
-  final refreshToken = model.refreshToken.split('');
-  
-  if(refreshToken.length != 2 || refreshToken.first != 'Bearer'){
-    log.error('Refresh token invalido');
-    throw ServiceException();
+      final refreshToken = model.refreshToken.split('');
+
+      if (refreshToken.length != 2 || refreshToken.first != 'Bearer') {
+        log.error('Refresh token invalido');
+        throw ServiceException();
+      }
+
+      final refreshTokenClaim = JwtHelper.getClaims(refreshToken.last);
+      refreshTokenClaim.validate(issuer: model.accessToken);
+    } on ServiceException catch (e) {
+      rethrow;
+    } on JwtException {
+      log.error("Refresh token invalido");
+      throw ServiceException();
+    } catch (e) {
+      throw ServiceException();
+    }
   }
-  
-  final refreshTokenClaim = JwtHelper.getClaims(refreshToken.last);
-  refreshTokenClaim.validate(issuer: model.accessToken);
-} on ServiceException catch (e) {
-  rethrow;
-} on JwtException{
-  log.error("Refresh token invalido");
-  throw ServiceException();
-}catch (e){
-  throw ServiceException();
-}
-  }
-  
+
   @override
   Future<User> findByID(int id) => userRepo.findByID(id);
 
   @override
-  Future<User> updateAvatar(UpdateUrlAvatarModel model) async{
+  Future<User> updateAvatar(UpdateUrlAvatarModel model) async {
     await userRepo.updateUrlAvatar(model.userID, model.urlAvatar);
     return findByID(model.userID);
   }
-  
-  
+
+  @override
+  Future<void> updateDeviceToken(UserUpdateDeviceTokenModel model) =>
+      userRepo.updateDeviceToken(
+        model.userID,
+        model.token,
+        model.platform,
+      );
 }
