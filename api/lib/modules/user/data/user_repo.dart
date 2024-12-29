@@ -187,6 +187,41 @@ class UserRepo implements IUserRepo {
         user.id!,
       ]);
     } catch (e) {
+      logger.error("erro ao atualizar");
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<User> findByID(int id) async {
+    MySqlConnection? conn;
+    try {
+      conn = await connection.openConnection();
+      final result =
+          await conn.query('select * from usuario where id = ?', [id]);
+
+      if (result.isEmpty) {
+        throw UserNotFoundException();
+      } else {
+        final dataMysql = result.first;
+
+        return User(
+          id: dataMysql['id'] as int,
+          email: dataMysql['email'],
+          registerType: dataMysql['tipo_cadastro'],
+          iosToken: (dataMysql['ios_token'] as Blob?)?.toString(),
+          androidToken: (dataMysql['android_token'] as Blob?)?.toString(),
+          refreshToken: (dataMysql['refresh_token'] as Blob?)?.toString(),
+          imageAvatar: (dataMysql['img_avatar'] as Blob?)?.toString(),
+          supplierID: dataMysql['fornecedor_id'] as int,
+          socialKey: dataMysql['social_id'] as String,
+        );
+      }
+    } catch (e) {
+      logger.error('Erro ao buscar usuario', e);
+      throw DatabaseException();
     } finally {
       await conn?.close();
     }

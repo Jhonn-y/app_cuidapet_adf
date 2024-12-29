@@ -6,5 +6,6 @@ abstract class IUserRepo {
   Future loginWithSocialKey(String email, String socialKey,String socialType);
   Future updateUserDeviceTokenAndRefreshToken(User user);
   Future updateRefreshToken(User user);
+  Future<User> findByID(int id);
 
 }

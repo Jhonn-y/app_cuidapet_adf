@@ -110,5 +110,8 @@ class UserService implements IUserService {
 }
   }
   
+  @override
+  Future<User> findByID(int id) => userRepo.findByID(id);
+  
   
 }
