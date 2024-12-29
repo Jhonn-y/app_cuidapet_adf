@@ -53,7 +53,7 @@ class UserRepo implements IUserRepo {
   }
 
   @override
-  Future loginWithEmailPassword(
+  Future<User> loginWithEmailPassword(
       String email, String password, bool supplierUser) async {
     MySqlConnection? conn;
 
@@ -99,7 +99,7 @@ class UserRepo implements IUserRepo {
   }
 
   @override
-  Future loginWithSocialKey(
+  Future<User> loginWithSocialKey(
       String email, String socialKey, String socialType) async {
     MySqlConnection? conn;
 
@@ -186,8 +186,8 @@ class UserRepo implements IUserRepo {
         user.refreshToken!,
         user.id!,
       ]);
-    } catch (e) {
-      logger.error("erro ao atualizar");
+    } on MySqlException catch (e) {
+      logger.error("erro ao atualizar token");
       throw DatabaseException();
     } finally {
       await conn?.close();
@@ -219,8 +219,26 @@ class UserRepo implements IUserRepo {
           socialKey: dataMysql['social_id'] as String,
         );
       }
-    } catch (e) {
+    } on MySqlException catch (e) {
       logger.error('Erro ao buscar usuario', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<void> updateUrlAvatar(int id, String urlAvatar) async {
+    MySqlConnection? conn;
+    try {
+      conn = await connection.openConnection();
+      
+
+      await conn.query('update usuario set img_avatar = ? where id = ?',[urlAvatar,id]);
+
+
+    } on MySqlException catch (e) {
+      logger.error('Erro ao atualizar avatar do usuario', e);
       throw DatabaseException();
     } finally {
       await conn?.close();

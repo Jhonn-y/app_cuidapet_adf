@@ -7,6 +7,7 @@ import 'package:cuidapet_api/application/logger/i_logger.dart';
 import 'package:cuidapet_api/modules/user/data/i_user_repo.dart';
 import 'package:cuidapet_api/modules/user/service/i_user_service.dart';
 import 'package:cuidapet_api/modules/user/view_models/refresh_token_view_model.dart';
+import 'package:cuidapet_api/modules/user/view_models/update_url_avatar_model.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_confirm_input_model.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_refresh_token_input_model.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_save_input_model.dart';
@@ -25,7 +26,7 @@ class UserService implements IUserService {
   });
 
   @override
-  Future createUser(UserSaveInputModel user) {
+  Future<User> createUser(UserSaveInputModel user) {
     final userEntity = User(
       email: user.email,
       password: user.password,
@@ -37,12 +38,12 @@ class UserService implements IUserService {
   }
 
   @override
-  Future loginWithEmailPassword(
+  Future<User> loginWithEmailPassword(
           String email, String password, bool supplierUser) =>
       userRepo.loginWithEmailPassword(email, password, supplierUser);
 
   @override
-  Future loginWithSocialKey(
+  Future<User> loginWithSocialKey(
       String email, String avatar, String socialKey, String socialType) async {
     try {
       return await userRepo.loginWithSocialKey(email, socialKey, socialType);
@@ -112,6 +113,12 @@ class UserService implements IUserService {
   
   @override
   Future<User> findByID(int id) => userRepo.findByID(id);
+
+  @override
+  Future<User> updateAvatar(UpdateUrlAvatarModel model) async{
+    await userRepo.updateUrlAvatar(model.userID, model.urlAvatar);
+    return findByID(model.userID);
+  }
   
   
 }

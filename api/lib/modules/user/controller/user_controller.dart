@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:cuidapet_api/application/exeptions/user_not_found_exception.dart';
 import 'package:cuidapet_api/application/logger/i_logger.dart';
 import 'package:cuidapet_api/modules/user/service/user_service.dart';
+import 'package:cuidapet_api/modules/user/view_models/update_url_avatar_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -37,6 +38,26 @@ class UserController {
       log.error("erro ao buscar usuario", e);
       return Response.internalServerError();
     }
+  }
+
+  @Route.put('/avatar')
+  Future<Response> updateAvatar(Request request) async {
+    try {
+  final userID = int.parse(request.headers['user']!);
+  final updateUrlAvatar = UpdateUrlAvatarModel(userID: userID, dataRequest: await request.readAsString());
+  
+  final user = await userService.updateAvatar(updateUrlAvatar);
+  
+  
+  return Response.ok(jsonEncode({
+      'email': user.email,
+      'register_type': user.registerType,
+      'img_avatar': user.imageAvatar
+    }));
+}  catch (e) {
+    log.error("Erro ao atualizar avatar", e);
+    return Response.internalServerError();
+}
   }
 
   Router get router => _$UserControllerRouter(this);

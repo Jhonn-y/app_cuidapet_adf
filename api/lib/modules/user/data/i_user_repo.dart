@@ -1,11 +1,12 @@
 import 'package:cuidapet_api/entities/user.dart';
 
 abstract class IUserRepo {
-  Future createUser(User user);
-  Future loginWithEmailPassword(String email, String password, bool supplierUser);
-  Future loginWithSocialKey(String email, String socialKey,String socialType);
-  Future updateUserDeviceTokenAndRefreshToken(User user);
-  Future updateRefreshToken(User user);
+  Future<User> createUser(User user);
+  Future<User> loginWithEmailPassword(String email, String password, bool supplierUser);
+  Future<User> loginWithSocialKey(String email, String socialKey,String socialType);
+  Future<void> updateUserDeviceTokenAndRefreshToken(User user);
+  Future<void> updateRefreshToken(User user);
   Future<User> findByID(int id);
+  Future<void> updateUrlAvatar(int id, String urlAvatar);
 
 }
