@@ -7,5 +7,6 @@ abstract class ISupplierRepo {
   Future<List<SupplierNearByMeDto>> findNearByPosition(double lat, double long, int distance);
   Future<Supplier?> findByID(int id);
   Future<List<SupplierService>> findServicesBySupplierID(int supId);
+  Future<bool> checkUserExists(String email);
 
 }

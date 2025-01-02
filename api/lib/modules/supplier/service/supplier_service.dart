@@ -22,4 +22,7 @@ class SupplierService implements ISupplierService {
 
   @override
   Future<List<entity.SupplierService>> findServicesBySupplierID(int supId) => supRepo.findServicesBySupplierID(supId);
+  
+  @override
+  Future<bool> checkUserExists(String email) => supRepo.checkUserExists(email);
 }

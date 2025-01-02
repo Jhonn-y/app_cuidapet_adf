@@ -132,4 +132,24 @@ class SupplierRepo implements ISupplierRepo {
       await conn?.close();
     }
   }
+
+  @override
+  Future<bool> checkUserExists(String email) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connetion.openConnection();
+      final result = await conn.query('SELECT COUNT(*) FROM fornecedor WHERE email = ?', [email]);
+
+      final dataMysql = result.first;
+      return dataMysql[0] > 0;
+
+
+    } on MySqlException catch (e) {
+      log.error('Erro ao verificar login do fornecedor', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
 }
