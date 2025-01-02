@@ -139,14 +139,40 @@ class SupplierRepo implements ISupplierRepo {
 
     try {
       conn = await connetion.openConnection();
-      final result = await conn.query('SELECT COUNT(*) FROM fornecedor WHERE email = ?', [email]);
+      final result = await conn
+          .query('SELECT COUNT(*) FROM fornecedor WHERE email = ?', [email]);
 
       final dataMysql = result.first;
       return dataMysql[0] > 0;
-
-
     } on MySqlException catch (e) {
       log.error('Erro ao verificar login do fornecedor', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<int> saveSupplier(Supplier supplier) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connetion.openConnection();
+      final result = await conn.query('''
+        INSERT INTO fornecedor (nome, logo, endereco, telefone, latlng,categorias_fornecedor_id)
+        VALUES (?,?,?,?,ST_GeomfromText(?),?)
+        ''', [
+        supplier.name,
+        supplier.logo,
+        supplier.address,
+        supplier.phone,
+        'POINT(${supplier.lat ?? 0} ${supplier.lng ?? 0})',
+        supplier.category?.id,
+      ]);
+
+      return result.insertId!;
+    } on MySqlException catch (e) {
+      log.error('Erro ao salvar', e);
       throw DatabaseException();
     } finally {
       await conn?.close();

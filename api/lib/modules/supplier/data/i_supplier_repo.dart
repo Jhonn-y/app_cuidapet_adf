@@ -8,5 +8,6 @@ abstract class ISupplierRepo {
   Future<Supplier?> findByID(int id);
   Future<List<SupplierService>> findServicesBySupplierID(int supId);
   Future<bool> checkUserExists(String email);
+  Future<int> saveSupplier(Supplier supplier);
 
 }

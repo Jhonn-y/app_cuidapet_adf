@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cuidapet_api/application/logger/i_logger.dart';
 import 'package:cuidapet_api/entities/supplier.dart';
 import 'package:cuidapet_api/modules/supplier/service/i_supplier_service.dart';
+import 'package:cuidapet_api/modules/supplier/view_models/create_supplier_user_view_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:shelf/shelf.dart';
@@ -91,6 +92,18 @@ class SupplierController {
     }
     final isEmailExists = await service.checkUserExists(email);
     return isEmailExists ? Response(200) : Response(204);
+  }
+
+  @Route.post('/user')
+  Future<Response> saveSupplierUser(Request request) async {
+    try {
+  final model = CreateSupplierUserViewModel(await request.readAsString());
+  await service.createUserSupplier(model);
+  return Response.ok(jsonEncode({}));
+} catch (e) {
+  log.error('Error ao salvar usuario do fornecedor: $e');
+  return Response.internalServerError();
+}
   }
 
   String _supplierMapper(Supplier supplier) {
