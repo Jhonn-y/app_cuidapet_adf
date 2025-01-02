@@ -5,6 +5,7 @@ import 'package:cuidapet_api/application/logger/i_logger.dart';
 import 'package:cuidapet_api/dtos/supplier_near_by_me_dto.dart';
 import 'package:cuidapet_api/entities/categories.dart';
 import 'package:cuidapet_api/entities/supplier.dart';
+import 'package:cuidapet_api/entities/supplier_service.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mysql1/mysql1.dart';
 
@@ -73,33 +74,62 @@ class SupplierRepo implements ISupplierRepo {
           f.id = ?
         ''';
 
-      final result = await conn.query(query,[id]);
+      final result = await conn.query(query, [id]);
 
-      if(result.isNotEmpty){
+      if (result.isNotEmpty) {
         final dataMysql = result.first;
         return Supplier(
-          id: dataMysql['id'],
-          name: dataMysql['nome'],
-          logo: (dataMysql['logo'] as Blob?)?.toString(),
-          address: dataMysql['endereco'],
-          phone: dataMysql['telefone'],
-          lat: dataMysql['lat'],
-          lng: dataMysql['lng'],
-          category: Categories(
-            id: dataMysql['categorias_fornecedor_id'],
-            name: dataMysql['nome_categoria'],
-            type: dataMysql['tipo_categoria'],  
-          )
-        );
+            id: dataMysql['id'],
+            name: dataMysql['nome'],
+            logo: (dataMysql['logo'] as Blob?)?.toString(),
+            address: dataMysql['endereco'],
+            phone: dataMysql['telefone'],
+            lat: dataMysql['lat'],
+            lng: dataMysql['lng'],
+            category: Categories(
+              id: dataMysql['categorias_fornecedor_id'],
+              name: dataMysql['nome_categoria'],
+              type: dataMysql['tipo_categoria'],
+            ));
       }
-
-
-    } on MySqlException catch(e) {
+    } on MySqlException catch (e) {
       log.error('Erro ao buscar fornecedor', e);
       throw DatabaseException();
-    }finally{
+    } finally {
       await conn?.close();
     }
     return null;
+  }
+
+  @override
+  Future<List<SupplierService>> findServicesBySupplierID(int supId) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connetion.openConnection();
+      final result = await conn.query('''
+        SELECT id,fornecedor_id,nome_servico,valor_servico
+        FROM fornecedor_servicos
+        WHERE fornecedor_id =?
+        ''', [supId]);
+
+      if (result.isEmpty) {
+        return [];
+      }
+
+      return result
+          .map((service) => SupplierService(
+                id: service['id'],
+                supplierID: service['fornecedor_id'],
+                name: service['nome_servico'],
+                price: service['valor_servico'],
+              ))
+          .toList();
+    } on MySqlException catch (e) {
+      log.error('Erro ao buscar serviços do fornecedor', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
   }
 }

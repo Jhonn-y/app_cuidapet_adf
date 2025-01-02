@@ -5,6 +5,7 @@ import 'package:cuidapet_api/application/logger/i_logger.dart';
 import 'package:cuidapet_api/entities/supplier.dart';
 import 'package:cuidapet_api/modules/supplier/service/i_supplier_service.dart';
 import 'package:injectable/injectable.dart';
+import 'package:mysql1/mysql1.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
@@ -57,6 +58,28 @@ class SupplierController {
     }
 
     return Response.ok(_supplierMapper(supplier));
+  }
+
+  @Route.get('/<supID|[0-9]+>/services')
+  Future<Response> findServicesBySupplierID(
+      Request request, String supID) async {
+    try {
+      final supplierServices =
+          await service.findServicesBySupplierID(int.parse(supID));
+      final result = supplierServices
+          .map((e) => {
+                'id': e.id,
+                'supplier_id': e.supplierID,
+                'name': e.name,
+                'price': e.price,
+              })
+          .toList();
+
+      return Response.ok(jsonEncode(result));
+    } on MySqlException catch (e) {
+      log.error('Error ao buscar servicos do fornecedor: $e');
+      return Response.internalServerError();
+    }
   }
 
   String _supplierMapper(Supplier supplier) {
