@@ -32,7 +32,19 @@ class ScheduleController {
 
       return Response.ok(jsonEncode({}));
     } catch (e) {
-      log.error('Erro ao salvar agendamento',e);
+      log.error('Erro ao salvar agendamento', e);
+      return Response.internalServerError();
+    }
+  }
+
+  @Route.put('/<scheduleID|[0-9]+>/status/<status>')
+  Future<Response> changeStatus(
+      Request request, String scheduleID,String status) async {
+    try {
+      await service.changeStatus(status, int.parse(scheduleID));
+      return Response.ok(jsonEncode({}));
+    } catch (e) {
+      log.error('Erro ao alterar status do agendamento', e);
       return Response.internalServerError();
     }
   }

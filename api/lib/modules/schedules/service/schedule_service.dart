@@ -34,4 +34,7 @@ class ScheduleService implements IScheduleService {
 
     await scheduleRepo.save(schedule);
   }
+  
+  @override
+  Future<void> changeStatus(String status, int scheduleID) => scheduleRepo.changeStatus(status, scheduleID);
 }

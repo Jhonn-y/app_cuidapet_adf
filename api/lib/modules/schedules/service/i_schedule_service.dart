@@ -3,4 +3,5 @@ import 'package:cuidapet_api/modules/schedules/view_models/schedule_save_input_m
 abstract class IScheduleService {
 
   Future<void> scheduleService(ScheduleSaveInputModel model);
+  Future<void> changeStatus(String status, int scheduleID);
 }
