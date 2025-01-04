@@ -171,7 +171,7 @@ class SupplierRepo implements ISupplierRepo {
         supplier.category?.id,
       ]);
 
-      return result.insertId!;
+      return result.insertId ?? 0;
     } on MySqlException catch (e) {
       log.error('Erro ao salvar', e);
       throw DatabaseException();
