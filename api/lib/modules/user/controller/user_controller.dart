@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:cuidapet_api/application/exeptions/user_not_found_exception.dart';
 import 'package:cuidapet_api/application/logger/i_logger.dart';
-import 'package:cuidapet_api/modules/user/service/user_service.dart';
+import 'package:cuidapet_api/modules/user/service/i_user_service.dart';
 import 'package:cuidapet_api/modules/user/view_models/update_url_avatar_model.dart';
 import 'package:cuidapet_api/modules/user/view_models/user_update_device_token_model.dart';
 import 'package:injectable/injectable.dart';
@@ -15,7 +15,7 @@ part 'user_controller.g.dart';
 
 @injectable
 class UserController {
-  UserService userService;
+  IUserService userService;
   ILogger log;
   UserController({
     required this.userService,
