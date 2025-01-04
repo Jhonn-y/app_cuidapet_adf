@@ -37,7 +37,8 @@ class SupplierRepo implements ISupplierRepo {
                   sin(radians(ST_X(f.latlng)))
               )) AS distancia
           FROM fornecedor f
-          HAVING distancia <= $distance;       
+          HAVING distancia <= $distance
+          ORDER BY distancia     
         ''';
 
       final result = await conn.query(query);
@@ -173,6 +174,56 @@ class SupplierRepo implements ISupplierRepo {
       return result.insertId!;
     } on MySqlException catch (e) {
       log.error('Erro ao salvar', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<Supplier> update(Supplier model) async {
+    MySqlConnection? conn;
+
+    try {
+      Categories? category;
+      conn = await connetion.openConnection();
+
+      await conn.query('''
+        UPDATE fornecedor
+        SET
+          nome = ?
+          logo = ?
+          endereco = ?
+          telefone = ?
+          latlng = ST_GeomfromText(?),
+          categorias_fornecedor_id =?
+        WHERE id = ? 
+        ''', [
+          model.name,
+          model.logo,
+          model.address,
+          model.phone,
+          'POINT(${model.lat?? 0} ${model.lng?? 0})',
+          model.category?.id,
+          model.id,
+        ]);
+
+      if(model.category != null){
+        final resultCategory = await conn
+        .query('SELECT * FROM categorias_fornecedor WHERE id = ?', [model.category?.id]);
+
+        var categoryData = resultCategory.first;
+        category = Categories(
+            id: categoryData['id'],
+            name: categoryData['nome_categoria'],
+            type: categoryData['tipo_categoria'],
+        );
+      }
+      
+      return model.copyWith(category: category);
+
+    } on MySqlException catch (e) {
+      log.error('Erro ao atualizar dados do fornecedor', e);
       throw DatabaseException();
     } finally {
       await conn?.close();

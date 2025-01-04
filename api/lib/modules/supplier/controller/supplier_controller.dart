@@ -5,6 +5,7 @@ import 'package:cuidapet_api/application/logger/i_logger.dart';
 import 'package:cuidapet_api/entities/supplier.dart';
 import 'package:cuidapet_api/modules/supplier/service/i_supplier_service.dart';
 import 'package:cuidapet_api/modules/supplier/view_models/create_supplier_user_view_model.dart';
+import 'package:cuidapet_api/modules/supplier/view_models/supplier_update_input_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:shelf/shelf.dart';
@@ -97,13 +98,34 @@ class SupplierController {
   @Route.post('/user')
   Future<Response> saveSupplierUser(Request request) async {
     try {
-  final model = CreateSupplierUserViewModel(await request.readAsString());
-  await service.createUserSupplier(model);
-  return Response.ok(jsonEncode({}));
-} catch (e) {
-  log.error('Error ao salvar usuario do fornecedor: $e');
-  return Response.internalServerError();
-}
+      final model = CreateSupplierUserViewModel(await request.readAsString());
+      await service.createUserSupplier(model);
+      return Response.ok(jsonEncode({}));
+    } catch (e) {
+      log.error('Error ao salvar usuario do fornecedor: $e');
+      return Response.internalServerError();
+    }
+  }
+
+  @Route.put('/')
+  Future<Response> update(Request request) async {
+    try {
+      final supplier = int.parse(request.headers['supplier'] ?? '');
+
+      if (supplier == '') {
+        return Response.badRequest(
+            body: jsonEncode({'message': 'Fornecedor não pode ser nulo'}));
+      }
+
+      final model = SupplierUpdateInputModel(
+          supplierID: supplier, dataRequest: await request.readAsString());
+      final supplierResponse = await service.update(model);
+
+      return Response.ok(jsonEncode(_supplierMapper(supplierResponse)));
+    } catch (e) {
+      log.error('Error ao atualizar fornecedor',e);
+      return Response.internalServerError();
+    }
   }
 
   String _supplierMapper(Supplier supplier) {

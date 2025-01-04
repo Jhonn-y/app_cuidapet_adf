@@ -9,5 +9,6 @@ abstract class ISupplierRepo {
   Future<List<SupplierService>> findServicesBySupplierID(int supId);
   Future<bool> checkUserExists(String email);
   Future<int> saveSupplier(Supplier supplier);
+  Future<Supplier> update(Supplier model);
 
 }
