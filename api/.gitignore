@@ -9,3 +9,4 @@ user_auth_controller.g.dart
 user_controller.g.dart
 categories_controller.g.dart
 supplier_controller.g.dart
+schedule_controller.g.dart
