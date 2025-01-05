@@ -3,6 +3,9 @@ import 'package:cuidapet_api/application/database/i_database_conn.dart';
 import 'package:cuidapet_api/application/exeptions/database_exception.dart';
 import 'package:cuidapet_api/application/logger/i_logger.dart';
 import 'package:cuidapet_api/entities/schedule.dart';
+import 'package:cuidapet_api/entities/schedule_supplier_entity.dart';
+import 'package:cuidapet_api/entities/supplier.dart';
+import 'package:cuidapet_api/entities/supplier_service.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mysql1/mysql1.dart';
 
@@ -66,6 +69,84 @@ class ScheduleRepo implements IScheduleRepo {
         ''', [status, scheduleID]);
     } on MySqlException catch (e) {
       log.error('Erro ao alterar status', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<List<Schedule>> findAllschedulesByUser(int userID) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+      final query = '''
+        SELECT 
+          a.id as agen_id,
+          a.data_agendamento,
+          a.status,
+          a.nome,
+          a.nome_pet,
+          f.nome as fornec_nome,
+          f.logo
+        FROM agendamento as a
+        INNER JOIN fornecedor f ON f.id = a.fornecedor_id
+        WHERE a.usuario_id = ?
+        ''';
+
+      final result = await conn.query(query, [userID]);
+
+      final scheduleResult = result
+          .map((s) async => Schedule(
+              id: s['id'],
+              scheduleDate: s['data_agendamento'],
+              status: s['status'],
+              name: s['nome'],
+              petName: s['nome_pet'],
+              userID: userID,
+              supplier: Supplier(
+                id: s['fornec_id'],
+                name: s['fornec_nome'],
+                logo: (s['logo'] as Blob?)?.toString(),
+              ),
+              services: await findAllServicesBySchedule(s['id'])))
+          .toList();
+
+      return Future.wait(scheduleResult);
+    } on MySqlException catch (e) {
+      log.error('Erro ao buscar agendamentos do usuario', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  Future<List<ScheduleSupplierEntity>> findAllServicesBySchedule(int scheduleID) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+
+      final result = await conn.query('''
+        SELECT
+          fs.id,fs.nome_servico, fs.valor_servico,fs.fornecedor_id
+        FROM agendamento_servicos as agend_servc
+        INNER JOIN fornecedor_servicos fs on fs.id = agend_servc.fornecedor_servicos_id
+        WHERE agend_serv.agendamento_id = ?
+        ORDER BY a.data_agendamento DESC
+        ''', [scheduleID]);
+
+      return result
+          .map((s) => ScheduleSupplierEntity(
+              service: SupplierService(
+                  id: s['id'],
+                  name: s['nome_servico'],
+                  price: s['valor_servico'],
+                  supplierID: s['fornecedor_id'])))
+          .toList();
+    } on MySqlException catch (e) {
+      log.error('Erro ao buscar servicos de um agendamento', e);
       throw DatabaseException();
     } finally {
       await conn?.close();

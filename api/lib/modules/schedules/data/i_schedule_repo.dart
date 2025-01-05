@@ -4,5 +4,6 @@ abstract class IScheduleRepo {
 
   Future<void> save(Schedule schedule);
   Future<void> changeStatus(String status, int scheduleID);
+  Future<List<Schedule>> findAllschedulesByUser(int userID);
 
 }
