@@ -122,6 +122,55 @@ class ScheduleRepo implements IScheduleRepo {
     }
   }
 
+
+  @override
+  Future<List<Schedule>> findAllschedulesByUserSupplier(int userID) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+      final query = '''
+        SELECT 
+          a.id as agen_id,
+          a.data_agendamento,
+          a.status,
+          a.nome,
+          a.nome_pet,
+          f.nome as fornec_nome,
+          f.logo
+        FROM agendamento as a
+        INNER JOIN fornecedor f ON f.id = a.fornecedor_id
+        INNER JOIN usuario u on u.fornecedor_id = f.id
+        WHERE u.id = ?
+        ''';
+
+      final result = await conn.query(query, [userID]);
+
+      final scheduleResult = result
+          .map((s) async => Schedule(
+              id: s['id'],
+              scheduleDate: s['data_agendamento'],
+              status: s['status'],
+              name: s['nome'],
+              petName: s['nome_pet'],
+              userID: userID,
+              supplier: Supplier(
+                id: s['fornec_id'],
+                name: s['fornec_nome'],
+                logo: (s['logo'] as Blob?)?.toString(),
+              ),
+              services: await findAllServicesBySchedule(s['id'])))
+          .toList();
+
+      return Future.wait(scheduleResult);
+    } on MySqlException catch (e) {
+      log.error('Erro ao buscar agendamentos do usuario', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
   Future<List<ScheduleSupplierEntity>> findAllServicesBySchedule(int scheduleID) async {
     MySqlConnection? conn;
 
@@ -134,7 +183,7 @@ class ScheduleRepo implements IScheduleRepo {
         FROM agendamento_servicos as agend_servc
         INNER JOIN fornecedor_servicos fs on fs.id = agend_servc.fornecedor_servicos_id
         WHERE agend_serv.agendamento_id = ?
-        ORDER BY a.data_agendamento DESC
+        ORDER BY a.data_agendamento 
         ''', [scheduleID]);
 
       return result
