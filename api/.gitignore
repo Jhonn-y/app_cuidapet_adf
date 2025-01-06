@@ -10,3 +10,4 @@ user_controller.g.dart
 categories_controller.g.dart
 supplier_controller.g.dart
 schedule_controller.g.dart
+chat_controller.g.dart
