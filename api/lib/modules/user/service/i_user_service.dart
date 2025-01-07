@@ -10,7 +10,7 @@ abstract class IUserService {
 
   Future<User> createUser(UserSaveInputModel user);
   Future<User> loginWithEmailPassword(String email, String password, bool supplierUser);
-  Future<User> loginWithSocialKey(String email,String avatar, String socialKey,String socialType);
+  Future<User> loginWithSocialKey(String email,String? avatar, String socialKey,String socialType);
   Future<String> confirmLogin(UserConfirmInputModel inputModel);
   Future<RefreshTokenViewModel> refreshToken(UserRefreshTokenInputModel model);
   Future<User> findByID(int id);

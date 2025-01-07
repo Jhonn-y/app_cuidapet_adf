@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cuidapet_api/application/exeptions/request_validation_exception.dart';
 import 'package:cuidapet_api/application/exeptions/user_exists_exception.dart';
 import 'package:cuidapet_api/application/exeptions/user_not_found_exception.dart';
 import 'package:cuidapet_api/application/helpers/jwt_helper.dart';
@@ -35,14 +36,16 @@ class UserAuthController {
       User user;
 
       if (!loginViewModel.socialLogin) {
+        loginViewModel.loginEmailValidate();
         user = await userService.loginWithEmailPassword(loginViewModel.login,
-            loginViewModel.password, loginViewModel.supplierUser);
+            loginViewModel.password!, loginViewModel.supplierUser);
       } else {
+        loginViewModel.loginSocialValidate();
         user = await userService.loginWithSocialKey(
             loginViewModel.login,
             loginViewModel.avatar,
-            loginViewModel.socialType,
-            loginViewModel.socialKey);
+            loginViewModel.socialType!,
+            loginViewModel.socialKey!);
       }
 
       return Response.ok(jsonEncode(
@@ -50,6 +53,9 @@ class UserAuthController {
     } on UserNotFoundException {
       return Response.forbidden(
           jsonEncode({'message': 'usuario ou senha invalidos!'}));
+    } on RequestValidationException catch (e) {
+      log.error('Parametros obrigatorios', e);
+      return Response(400, body: jsonEncode(e.errors));
     } catch (e) {
       log.error('Erro ao fazer login', e);
       return Response.internalServerError(
@@ -60,7 +66,8 @@ class UserAuthController {
   @Route.post('/register')
   Future<Response> saveUser(Request request) async {
     try {
-      final userModel = UserSaveInputModel.requestMapping(await request.readAsString());
+      final userModel =
+          UserSaveInputModel.requestMapping(await request.readAsString());
       await userService.createUser(userModel);
 
       return Response.ok(jsonEncode({'message': 'Cadastro realizado!!'}));
@@ -76,41 +83,50 @@ class UserAuthController {
 
   @Route('PATCH', '/confirm')
   Future<Response> confirmUser(Request request) async {
-    final user = int.parse(request.headers['user']!);
-    final supplier = int.tryParse(request.headers['supplier'] ?? '');
-    final token =
-        JwtHelper.generateJwt(user, supplier).replaceAll('Bearer', '');
+    try {
+      final user = int.parse(request.headers['user']!);
+      final supplier = int.tryParse(request.headers['supplier'] ?? '');
+      final token =
+          JwtHelper.generateJwt(user, supplier).replaceAll('Bearer', '');
 
-    final inputModel = UserConfirmInputModel(
-        userID: user, accessToken: token, data: await request.readAsString());
+      final inputModel = UserConfirmInputModel(
+          userID: user, accessToken: token, data: await request.readAsString());
 
-    final refreshToken = await userService.confirmLogin(inputModel);
+      inputModel.validateRequest();
+      final refreshToken = await userService.confirmLogin(inputModel);
 
-    return Response.ok(jsonEncode(
-        {'access_token': 'Bearer $token', 'refresh_token': refreshToken}));
+      return Response.ok(jsonEncode(
+          {'access_token': 'Bearer $token', 'refresh_token': refreshToken}));
+    } on RequestValidationException catch (e) {
+      log.error('Parametros obrigatorios', e);
+      return Response(400, body: jsonEncode(e.errors));
+    } catch (e) {
+      log.error('erro ao confirmar login', e);
+      return Response.internalServerError();
+    }
   }
 
   @Route.put('/refresh/')
   Future<Response> refreshToken(Request request) async {
     try {
-  final user = int.parse(request.headers['user']!);
-  final supplier = int.tryParse(request.headers['supplier'] ?? '');
-  final accesToken = request.headers['access_token']!;
-  final model = UserRefreshTokenInputModel(
-      user: user,
-      supplier: supplier,
-      accessToken: accesToken,
-      dataRequest: await request.readAsString());
-  
-  final userRefreshToken = await userService.refreshToken(model);
-  
-  return Response.ok(jsonEncode({
-    'access_token': userRefreshToken.accessToken,
-    'refresh_token': userRefreshToken.refreshToken
-  }));
-} catch (e) {
-  return Response.internalServerError();
-}
+      final user = int.parse(request.headers['user']!);
+      final supplier = int.tryParse(request.headers['supplier'] ?? '');
+      final accesToken = request.headers['access_token']!;
+      final model = UserRefreshTokenInputModel(
+          user: user,
+          supplier: supplier,
+          accessToken: accesToken,
+          dataRequest: await request.readAsString());
+
+      final userRefreshToken = await userService.refreshToken(model);
+
+      return Response.ok(jsonEncode({
+        'access_token': userRefreshToken.accessToken,
+        'refresh_token': userRefreshToken.refreshToken
+      }));
+    } catch (e) {
+      return Response.internalServerError();
+    }
   }
 
   Router get router => _$UserAuthControllerRouter(this);

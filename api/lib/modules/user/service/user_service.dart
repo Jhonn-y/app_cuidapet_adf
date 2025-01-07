@@ -45,7 +45,7 @@ class UserService implements IUserService {
 
   @override
   Future<User> loginWithSocialKey(
-      String email, String avatar, String socialKey, String socialType) async {
+      String email, String? avatar, String socialKey, String socialType) async {
     try {
       return await userRepo.loginWithSocialKey(email, socialKey, socialType);
     } on UserNotFoundException catch (e) {

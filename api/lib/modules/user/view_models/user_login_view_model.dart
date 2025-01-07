@@ -1,15 +1,13 @@
-
-
+import 'package:cuidapet_api/application/exeptions/request_validation_exception.dart';
 import 'package:cuidapet_api/application/helpers/request_mapping.dart';
 
 class UserLoginViewModel extends RequestMapping {
-
   late String login;
-  late String password;
+  String? password;
   late bool socialLogin;
-  late String avatar;
-  late String socialType;
-  late String socialKey;
+  String? avatar;
+  String? socialType;
+  String? socialKey;
   late bool supplierUser;
 
   UserLoginViewModel(super.dataRequest);
@@ -21,10 +19,34 @@ class UserLoginViewModel extends RequestMapping {
     socialLogin = data['social_login'];
     avatar = data['avatar'];
     socialType = data['social_type'];
-    socialKey = data['social_key'];    
+    socialKey = data['social_key'];
     supplierUser = data['supplier_user'];
-  
   }
-  
-  
+
+  void loginEmailValidate() {
+    final errors = <String, String>{};
+
+    if (password == null) {
+      errors['password'] = 'Login is required';
+    }
+
+    if (errors.isNotEmpty) {
+      throw RequestValidationException(errors);
+    }
+  }
+
+  void loginSocialValidate() {
+    final errors = <String, String>{};
+
+    if (socialType == null) {
+      errors['social_type'] = 'required';
+    }
+    if (socialKey == null) {
+      errors['social_key'] = 'required';
+    }
+
+    if (errors.isNotEmpty) {
+      throw RequestValidationException(errors);
+    }
+  }
 }
