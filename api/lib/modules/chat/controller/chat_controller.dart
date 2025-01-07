@@ -71,5 +71,37 @@ class ChatController {
     }
   }
 
+  @Route.get('/supplier')
+  Future<Response> findChatsBySupplier(Request request) async {
+    try {
+      final supplier = request.headers['supplier'];
+      if (supplier == null) {
+        return Response(400,
+            body: jsonEncode({'message': 'Usuario não é um fornecedor!'}));
+      }
+      final supplierID = int.parse(supplier);
+      final chats = await service.getChatsBySupplier(supplierID);
+
+      final resultChats = chats
+          .map((c) => {
+                'id': c.id,
+                'user': c.user,
+                'name': c.name,
+                'pet_name': c.petName,
+                'supplier': {
+                  'id': c.supplier.id,
+                  'name': c.supplier.name,
+                  'logo': c.supplier.logo,
+                }
+              })
+          .toList();
+
+      return Response.ok(jsonEncode(resultChats));
+    } catch (e) {
+      log.error('Erro ao buscar chats por fornecedor', e);
+      return Response.internalServerError();
+    }
+  }
+
   Router get router => _$ChatControllerRouter(this);
 }

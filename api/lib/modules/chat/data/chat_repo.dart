@@ -149,4 +149,49 @@ class ChatRepo implements IChatRepo {
       await conn?.close();
     }
   }
+  
+  @override
+  Future<List<Chat>> getChatsBySupplier(int supplier) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+      final query = '''
+        SELECT 
+          c.id,c.data_criacao,c.status,
+          a.nome,a.nome_pet,a.fornecedor_id,a.usuario_id,
+          f.nome AS fornec_nome,f.logo,
+        FROM chats as c
+        INNER JOIN agendamento a on a.id = c.agendamento_id
+        INNER JOIN fornecedor f on f.id = a.fornecedor_id
+        WHERE 
+          a.fornecedor_id = ?
+        AND
+          c.status = 'A'
+        ORDER BY 
+          c.data_criacao
+        ''';
+
+      final result = await conn.query(query,[supplier]);
+
+      return result
+          .map((c) => Chat(
+              id: c['id'],
+              user: c['usuario_id'],
+              supplier: Supplier(
+                id: c['fornecedor_id'],
+                name: c['fornec_nome'],
+                logo: (c['logo'] as Blob?)?.toString(),
+              ),
+              name: c['nome'],
+              petName: c['nome_pet'],
+              status: c['status']))
+          .toList();
+    } on MySqlException catch (e) {
+      log.error('Erro ao buscar chat', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
 }
