@@ -127,7 +127,7 @@ class ChatRepo implements IChatRepo {
           c.data_criacao
         ''';
 
-      final result = await conn.query(query,[user]);
+      final result = await conn.query(query, [user]);
 
       return result
           .map((c) => Chat(
@@ -149,7 +149,7 @@ class ChatRepo implements IChatRepo {
       await conn?.close();
     }
   }
-  
+
   @override
   Future<List<Chat>> getChatsBySupplier(int supplier) async {
     MySqlConnection? conn;
@@ -172,7 +172,7 @@ class ChatRepo implements IChatRepo {
           c.data_criacao
         ''';
 
-      final result = await conn.query(query,[supplier]);
+      final result = await conn.query(query, [supplier]);
 
       return result
           .map((c) => Chat(
@@ -189,6 +189,25 @@ class ChatRepo implements IChatRepo {
           .toList();
     } on MySqlException catch (e) {
       log.error('Erro ao buscar chat', e);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<void> endChat(int chatID) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+
+      await conn.query('''
+        UPDATE chats 
+        SET status = 'F'
+        ''', [chatID]);
+    } on MySqlException catch (e) {
+      log.error('Erro ao finalizar chat', e);
       throw DatabaseException();
     } finally {
       await conn?.close();
