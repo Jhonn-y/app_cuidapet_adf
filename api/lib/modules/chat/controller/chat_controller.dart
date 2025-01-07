@@ -36,12 +36,39 @@ class ChatController {
   @Route.post('/notify')
   Future<Response> notifyUser(Request request) async {
     try {
-  final model = NotifyUserViewModel(await request.readAsString());
-  await service.notifyChat(model);
-  return Response.ok(jsonEncode({}));
-} catch (e) {
-  return Response.internalServerError();
-}
+      final model = NotifyUserViewModel(await request.readAsString());
+      await service.notifyChat(model);
+      return Response.ok(jsonEncode({}));
+    } catch (e) {
+      return Response.internalServerError();
+    }
+  }
+
+  @Route.get('/users')
+  Future<Response> findChatsByUser(Request request) async {
+    try {
+      final user = int.parse(request.headers['user']!);
+      final chats = await service.getChatsByUser(user);
+
+      final resultChats = chats
+          .map((c) => {
+                'id': c.id,
+                'user': c.user,
+                'name': c.name,
+                'pet_name': c.petName,
+                'supplier': {
+                  'id': c.supplier.id,
+                  'name': c.supplier.name,
+                  'logo': c.supplier.logo,
+                }
+              })
+          .toList();
+
+      return Response.ok(jsonEncode(resultChats));
+    } catch (e) {
+      log.error('Erro ao buscar chats por usuário', e);
+      return Response.internalServerError();
+    }
   }
 
   Router get router => _$ChatControllerRouter(this);
