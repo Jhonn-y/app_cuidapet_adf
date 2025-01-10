@@ -7,6 +7,6 @@ class AppModule extends Module {
 
   @override
   void routes(RouteManager r) {
-    r.module('/auth', module: AuthModule());
+    r.module('/auth/', module: AuthModule());
   }
 }
