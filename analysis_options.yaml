@@ -14,6 +14,7 @@ analyzer:
     collection_methods_unrelated_type: ignore
     unrelated_type_equality_checks: ignore
     unused_catch_clause: ignore
+    must_be_immutable: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:
