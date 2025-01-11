@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_cuidapet/app/core/ui/icons/cuidapet_icons.dart';
 import 'package:projeto_cuidapet/app/core/ui/widgets/cuidapet_textform_field.dart';
+import 'package:projeto_cuidapet/app/core/ui/widgets/default_button.dart';
+import 'package:projeto_cuidapet/app/core/ui/widgets/rounded_button_with_icon.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -40,7 +43,14 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       _formKey.currentState?.validate();
                     },
-                    child: Text('Validar'))
+                    child: Text('Validar')),
+                RoundedButtonWithIcon(
+                    ontap: () {},
+                    color: Colors.blue,
+                    width: 200,
+                    icon: CuidapetIcons.facebook,
+                    label: 'Facebook'),
+                DefaultButton(onPressed: () {}, label: 'Entrar'),
               ],
             ),
           ),
