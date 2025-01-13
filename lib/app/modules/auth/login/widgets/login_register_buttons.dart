@@ -26,11 +26,13 @@ class _LoginRegisterButtons extends StatelessWidget {
           label: 'Google',
         ),
         RoundedButtonWithIcon(
-          ontap: () {},
+          ontap: () {
+            Navigator.pushNamed(context, '/auth/register');
+          },
           color: context.primaryColorDark,
           width: .42.sw,
           icon: Icons.email,
-          label: 'Email',
+          label: 'Cadastre-se',
         ),
       ],
     );
