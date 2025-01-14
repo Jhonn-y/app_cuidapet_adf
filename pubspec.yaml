@@ -36,6 +36,10 @@ dependencies:
   asuka: ^2.2.1
   dio: ^5.7.0
   flutter_screenutil: ^5.9.3
+  firebase_core: ^3.10.0
+  firebase_remote_config: ^5.3.0
+  firebase_analytics: ^11.4.0
+  flutter_dotenv: ^5.2.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -69,6 +73,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/logo.png
+    - .env
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

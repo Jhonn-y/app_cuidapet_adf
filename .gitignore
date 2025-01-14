@@ -23,6 +23,10 @@ pubspec.lock
 service_locator.config.dart
 devtools_options.yaml
 auth_store.g.dart
+google-services.json
+firebase.json
+firebase_options.dart
+.env
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
