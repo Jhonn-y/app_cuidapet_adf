@@ -16,6 +16,7 @@ analyzer:
     unused_catch_clause: ignore
     must_be_immutable: ignore
     constant_identifier_names: ignore
+    type_literal_in_constant_pattern: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:
