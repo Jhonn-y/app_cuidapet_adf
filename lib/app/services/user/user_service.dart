@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:projeto_cuidapet/app/core/exceptions/failure.dart';
 import 'package:projeto_cuidapet/app/core/exceptions/user_exists_exception.dart';
+import 'package:projeto_cuidapet/app/core/exceptions/user_not_exists_exception.dart';
 import 'package:projeto_cuidapet/app/core/logger/app_logger.dart';
 import 'package:projeto_cuidapet/app/repo/user/i_user_repo.dart';
 
@@ -33,6 +34,41 @@ class UserService implements IUserService {
     } on FirebaseException catch (e) {
       _log.error('Erro ao criar usuario no firebase', e);
       throw Failure(message: 'Erro ao criar usuario no firebase');
+    }
+  }
+
+  @override
+  Future<void> login(String email, String password) async {
+    try {
+      final firebaseAuth = FirebaseAuth.instance;
+
+      final loginMethods = await firebaseAuth.fetchSignInMethodsForEmail(email);
+
+      if (loginMethods.isEmpty) {
+        throw UserNotExistsException();
+      }
+
+      if (loginMethods.contains('password')) {
+        final userCredential = await firebaseAuth.signInWithEmailAndPassword(
+            email: email, password: password);
+
+        final userVerified = userCredential.user?.emailVerified ?? false;
+
+        if (!userVerified) {
+          userCredential.user?.sendEmailVerification();
+          throw Failure(
+              message:
+                  'Email não verificado, olhe seu email ou caixa de spam para continuar.');
+        }
+      } else {
+        throw Failure(
+          message:
+              'Login não pode ser feito com esse email e senha, tente com outro método para entrar!',
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      _log.error('Usuario ou senha invalidos', e);
+      throw Failure(message: 'Usuario ou senha invalidos');
     }
   }
 }
