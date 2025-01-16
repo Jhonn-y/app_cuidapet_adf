@@ -12,7 +12,7 @@ class _RegisterFormState extends State<_RegisterForm> {
   final _loginEC = TextEditingController();
   final _passwordEC = TextEditingController();
   final _controller = Modular.get<RegisterController>();
-  
+
 
   @override
   void dispose() {
@@ -62,11 +62,11 @@ class _RegisterFormState extends State<_RegisterForm> {
           SizedBox(
             height: 20,
           ),
-          DefaultButton(onPressed: () {
+          DefaultButton(onPressed: () async {
             final formValid = _formKey.currentState?.validate() ?? false;
 
             if(formValid){
-              _controller.register(email: _loginEC.text, password: _passwordEC.text);
+              await _controller.register(email: _loginEC.text, password: _passwordEC.text);
             }
           }, label: 'Cadastrar')
         ],
