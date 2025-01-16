@@ -4,10 +4,17 @@ import 'package:projeto_cuidapet/app/modules/auth/login/login_module.dart';
 import 'package:projeto_cuidapet/app/modules/auth/register/register_module.dart';
 import 'package:projeto_cuidapet/app/modules/core_module/auth/auth_store.dart';
 import 'package:projeto_cuidapet/app/modules/core_module/core_module.dart';
+import 'package:projeto_cuidapet/app/repo/user/i_user_repo.dart';
+import 'package:projeto_cuidapet/app/repo/user/user_repo.dart';
+import 'package:projeto_cuidapet/app/services/user/i_user_service.dart';
+import 'package:projeto_cuidapet/app/services/user/user_service.dart';
 
 class AuthModule extends Module {
   @override
-  void binds(Injector i) {}
+  void exportedBinds(Injector i) {
+    i.addLazySingleton<IUserRepo>(UserRepo.new);
+    i.addLazySingleton<IUserService>(UserService.new);
+  }
 
   @override
   List<Module> get imports => [

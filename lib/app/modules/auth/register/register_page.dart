@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:projeto_cuidapet/app/core/ui/extensions/size_screen_extension.dart';
 import 'package:projeto_cuidapet/app/core/ui/widgets/cuidapet_textform_field.dart';
 import 'package:projeto_cuidapet/app/core/ui/widgets/default_button.dart';
+import 'package:projeto_cuidapet/app/modules/auth/register/register_controller.dart';
+import 'package:validatorless/validatorless.dart';
 
 part './widgets/register_form.dart';
 
