@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:projeto_cuidapet/app/core/exceptions/failure.dart';
 import 'package:projeto_cuidapet/app/core/exceptions/user_exists_exception.dart';
 import 'package:projeto_cuidapet/app/core/exceptions/user_not_exists_exception.dart';
+import 'package:projeto_cuidapet/app/core/helpers/constants.dart';
+import 'package:projeto_cuidapet/app/core/local_storage/local_storage.dart';
 import 'package:projeto_cuidapet/app/core/logger/app_logger.dart';
 import 'package:projeto_cuidapet/app/repo/user/i_user_repo.dart';
 
@@ -10,9 +12,14 @@ import './i_user_service.dart';
 class UserService implements IUserService {
   final IUserRepo _userRepo;
   final AppLogger _log;
+  final LocalStorage _localStorage;
 
-  UserService({required AppLogger log, required IUserRepo userRepo})
+  UserService(
+      {required AppLogger log,
+      required IUserRepo userRepo,
+      required LocalStorage localStorage})
       : _userRepo = userRepo,
+        _localStorage = localStorage,
         _log = log;
 
   @override
@@ -60,6 +67,9 @@ class UserService implements IUserService {
               message:
                   'Email não verificado, olhe seu email ou caixa de spam para continuar.');
         }
+
+        final accessToken = await _userRepo.login(email, password);
+        await _saveAccessToken(accessToken);
       } else {
         throw Failure(
           message:
@@ -71,4 +81,7 @@ class UserService implements IUserService {
       throw Failure(message: 'Usuario ou senha invalidos');
     }
   }
+
+  Future<void> _saveAccessToken(String accessToken) =>
+      _localStorage.write<String>(Constants.LOCAL_STORAGE_ACCESS_TOKEN_KEY, accessToken);
 }

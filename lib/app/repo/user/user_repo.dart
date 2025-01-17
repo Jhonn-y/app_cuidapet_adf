@@ -31,4 +31,30 @@ class UserRepo implements IUserRepo {
       throw Failure(message: 'Erro ao cadastrar usuario');
     }
   }
+
+  @override
+  Future<String> login(String email, String password) async {
+    try {
+      final result = await _restClient.unAuth().post(
+        '/auth/',
+        data: {
+          'login': email,
+          'password': password,
+          'social_login': false,
+          'supplier_user': false
+        },
+      );
+
+      return result.data['access_token'];
+    } on RestClientException catch (e) {
+      if (e.statusCode == 403) {
+        throw Failure(
+            message:
+                'Usuario inconsistente no sistema, entre em contato com o suporte!!');
+      }
+      _log.error('Erro ao realizar login', e);
+      throw Failure(
+          message: 'Erro ao realizar login, tente novamente mais tarde');
+    }
+  }
 }
