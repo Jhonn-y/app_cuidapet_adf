@@ -74,6 +74,7 @@ class UserService implements IUserService {
         final accessToken = await _userRepo.login(email, password);
         await _saveAccessToken(accessToken);
         await _confirmLogin();
+        await _getUserData();
       } else {
         throw Failure(
           message:
@@ -95,5 +96,11 @@ class UserService implements IUserService {
     await _saveAccessToken(confirmloginModel.accessToken);
     await _localStorage.write(Constants.LOCAL_STORAGE_REFRESH_TOKEN_KEY,
         confirmloginModel.refreshToken);
+  }
+
+  Future<void> _getUserData() async {
+    final userModel = await _userRepo.getUserLogged();
+    await _localStorage.write<String>(
+        Constants.LOCAL_STORAGE_USER_LOGGED_DATA_KEY, userModel.toJson());
   }
 }

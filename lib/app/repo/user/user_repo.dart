@@ -7,6 +7,7 @@ import 'package:projeto_cuidapet/app/core/logger/app_logger.dart';
 import 'package:projeto_cuidapet/app/core/rest_client/rest_client.dart';
 import 'package:projeto_cuidapet/app/core/rest_client/rest_client_exception.dart';
 import 'package:projeto_cuidapet/app/model/confirm_login_model.dart';
+import 'package:projeto_cuidapet/app/model/user_model.dart';
 
 import './i_user_repo.dart';
 
@@ -76,6 +77,17 @@ class UserRepo implements IUserRepo {
     } on RestClientException catch (e) {
       _log.error('Erro ao confirmar login', e);
       throw Failure(message: 'Erro ao confirmar login');
+    }
+  }
+
+  @override
+  Future<UserModel> getUserLogged() async {
+    try {
+      final result = await _restClient.get('/user/');
+      return UserModel.fromMap(result.data);
+    } on RestClientException catch (e) {
+      _log.error('Erro ao buscar dados do usuario logado', e);
+      throw Failure(message: 'Erro ao buscar dados do usuario logado');
     }
   }
 }

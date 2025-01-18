@@ -1,3 +1,4 @@
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:projeto_cuidapet/app/core/exceptions/failure.dart';
 import 'package:projeto_cuidapet/app/core/exceptions/user_not_exists_exception.dart';
@@ -23,6 +24,7 @@ abstract class _LoginControllerBase with Store {
       Loader.show();
       await _userService.login(email, password);
       Loader.hide();
+      Modular.to.navigate('/auth/');
     } on UserNotExistsException catch (e) {
       _log.error('Usuario não cadastrado', e);
       Loader.hide();
