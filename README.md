@@ -11,4 +11,7 @@ ATUALIZAR O HTTP DO FCM E SAIR DA VERSÃO LEGADA, POIS FOI DESCONTINUADO (push_n
 
 adicionar google_service.json, GoogleService-Info.plist, firebase.json e firebase_options.dart (FIREBASE)
 
+seguir o passo a passo para fazer o login com o facebook com o site:
+https://facebook.meedu.app/docs/7.x.x/android/
+
 atualizar os metodos de cadastro por email e senha, pois ja esta na versão legada

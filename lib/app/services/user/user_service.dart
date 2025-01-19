@@ -126,8 +126,10 @@ class UserService implements IUserService {
           );
           break;
         case SocialLoginType.facebook:
-          throw Failure(message: '');
-          break;
+          socialModel = await _socialRepo.facebookLogin();
+          authCredential =
+              FacebookAuthProvider.credential(socialModel.accessToken);
+              break;
       }
 
       final loginMethods =

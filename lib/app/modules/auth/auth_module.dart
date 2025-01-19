@@ -1,5 +1,4 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:projeto_cuidapet/app/model/social_network_model.dart';
 import 'package:projeto_cuidapet/app/modules/auth/home/auth_home_page.dart';
 import 'package:projeto_cuidapet/app/modules/auth/login/login_module.dart';
 import 'package:projeto_cuidapet/app/modules/auth/register/register_module.dart';

@@ -30,6 +30,7 @@ firebase_options.dart
 register_controller.g.dart
 login_controller.g.dart
 GoogleService-Info.plist
+strings.xml
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
