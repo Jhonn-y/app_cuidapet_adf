@@ -6,6 +6,7 @@ import 'package:projeto_cuidapet/app/core/ui/icons/cuidapet_icons.dart';
 import 'package:projeto_cuidapet/app/core/ui/widgets/cuidapet_textform_field.dart';
 import 'package:projeto_cuidapet/app/core/ui/widgets/default_button.dart';
 import 'package:projeto_cuidapet/app/core/ui/widgets/rounded_button_with_icon.dart';
+import 'package:projeto_cuidapet/app/model/social_login_type.dart';
 import 'package:projeto_cuidapet/app/modules/auth/login/login_controller.dart';
 import 'package:validatorless/validatorless.dart';
 

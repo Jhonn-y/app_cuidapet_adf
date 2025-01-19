@@ -1,0 +1,40 @@
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:projeto_cuidapet/app/core/exceptions/failure.dart';
+import 'package:projeto_cuidapet/app/model/social_network_model.dart';
+
+import './i_social_repo.dart';
+
+class SocialRepo implements ISocialRepo {
+  @override
+  Future<SocialNetworkModel> facebookLogin() {
+    // TODO: implement facebookLogin
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<SocialNetworkModel> googleLogin() async {
+    try {
+      final googleSingIn = await GoogleSignIn();
+
+      if (await googleSingIn.isSignedIn()) {
+        await googleSingIn.disconnect();
+      }
+
+      final googleUser = await googleSingIn.signIn();
+      final googleAuth = await googleUser?.authentication;
+
+      if (googleAuth != null && googleUser != null) {
+        return SocialNetworkModel(
+            id: googleAuth.idToken ?? '',
+            name: googleUser.displayName ?? '',
+            email: googleUser.email,
+            type: 'Google',
+            accessToken: googleAuth.accessToken ?? '');
+      } else {
+        throw Failure(message: 'Não foi possível realizar login com o Google');
+      }
+    } catch (e) {
+      throw Failure(message: 'Erro ao realizar login com o Google');
+    }
+  }
+}

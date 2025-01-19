@@ -9,6 +9,6 @@ ATUALIZAR O HTTP DO FCM E SAIR DA VERSÃO LEGADA, POIS FOI DESCONTINUADO (push_n
 
 ## Aplicação
 
-adicionar google_service.json, firebase.json e firebase_options.dart (FIREBASE)
+adicionar google_service.json, GoogleService-Info.plist, firebase.json e firebase_options.dart (FIREBASE)
 
 atualizar os metodos de cadastro por email e senha, pois ja esta na versão legada

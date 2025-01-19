@@ -7,6 +7,7 @@ import 'package:projeto_cuidapet/app/core/logger/app_logger.dart';
 import 'package:projeto_cuidapet/app/core/rest_client/rest_client.dart';
 import 'package:projeto_cuidapet/app/core/rest_client/rest_client_exception.dart';
 import 'package:projeto_cuidapet/app/model/confirm_login_model.dart';
+import 'package:projeto_cuidapet/app/model/social_network_model.dart';
 import 'package:projeto_cuidapet/app/model/user_model.dart';
 
 import './i_user_repo.dart';
@@ -88,6 +89,31 @@ class UserRepo implements IUserRepo {
     } on RestClientException catch (e) {
       _log.error('Erro ao buscar dados do usuario logado', e);
       throw Failure(message: 'Erro ao buscar dados do usuario logado');
+    }
+  }
+
+  @override
+  Future<String> loginSocial(SocialNetworkModel model) async {
+    try {
+      final result = await _restClient.unAuth().post('/auth/', data: {
+        'login': model.email,
+        'social_login': true,
+        'avatar': model.avatar,
+        'social_type': model.type,
+        'social_key': model.id,
+        'supplier_user': false,
+      });
+
+      return result.data['access_token'];
+    } on RestClientException catch (e) {
+      if (e.statusCode == 403) {
+        throw Failure(
+            message:
+                'Usuario inconsistente no sistema, entre em contato com o suporte!!');
+      }
+      _log.error('Erro ao realizar login', e);
+      throw Failure(
+          message: 'Erro ao realizar login, tente novamente mais tarde');
     }
   }
 }

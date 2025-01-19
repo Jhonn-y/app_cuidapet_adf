@@ -1,4 +1,5 @@
 import 'package:projeto_cuidapet/app/model/confirm_login_model.dart';
+import 'package:projeto_cuidapet/app/model/social_network_model.dart';
 import 'package:projeto_cuidapet/app/model/user_model.dart';
 
 abstract class IUserRepo {
@@ -6,4 +7,5 @@ abstract class IUserRepo {
   Future<String> login(String email, String password);
   Future<ConfirmLoginModel> confirmLogin();
   Future<UserModel> getUserLogged();
+  Future<String> loginSocial(SocialNetworkModel model);
 }
