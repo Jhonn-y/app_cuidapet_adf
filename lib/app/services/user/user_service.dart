@@ -100,7 +100,7 @@ class UserService implements IUserService {
     final confirmloginModel = await _userRepo.confirmLogin();
 
     await _saveAccessToken(confirmloginModel.accessToken);
-    await _localStorage.write(Constants.LOCAL_STORAGE_REFRESH_TOKEN_KEY,
+    await _secureStorage.write(Constants.LOCAL_STORAGE_REFRESH_TOKEN_KEY,
         confirmloginModel.refreshToken);
   }
 
