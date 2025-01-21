@@ -9,7 +9,7 @@ class AppWigdet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Modular.setInitialRoute('/auth/');
+    Modular.setInitialRoute('/home/');
     Modular.setObservers([Asuka.asukaHeroController]);
 
     return ScreenUtilInit(
