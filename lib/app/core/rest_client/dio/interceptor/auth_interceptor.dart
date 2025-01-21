@@ -1,21 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:projeto_cuidapet/app/core/helpers/constants.dart';
 import 'package:projeto_cuidapet/app/core/local_storage/local_storage.dart';
-import 'package:projeto_cuidapet/app/core/logger/app_logger.dart';
 import 'package:projeto_cuidapet/app/modules/core_module/auth/auth_store.dart';
 
 class AuthInterceptor extends Interceptor {
   final LocalStorage _localStorage;
-  final AppLogger _log;
   final AuthStore _authStore;
 
   AuthInterceptor(
       {required AuthStore authStore,
       required LocalStorage localStorage,
-      required AppLogger log})
+      })
       : _localStorage = localStorage,
-        _authStore = authStore,
-        _log = log;
+        _authStore = authStore;
 
   @override
   Future<void> onRequest(
@@ -43,10 +40,4 @@ class AuthInterceptor extends Interceptor {
     }
     handler.next(options);
   }
-
-  @override
-  void onResponse(Response response, ResponseInterceptorHandler handler) {}
-
-  @override
-  void onError(DioException error, ErrorInterceptorHandler handler) {}
 }

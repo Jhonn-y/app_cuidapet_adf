@@ -22,7 +22,7 @@ class JwtHelper {
     final claimSet = JwtClaim(
       issuer: 'cuidapet',
       subject: userID.toString(),
-      expiry: DateTime.now().add(Duration(days: 1)),
+      expiry: DateTime.now().add(Duration(seconds: 20)),
       notBefore: DateTime.now(),
       issuedAt: DateTime.now(),
       otherClaims: <String, dynamic>{
