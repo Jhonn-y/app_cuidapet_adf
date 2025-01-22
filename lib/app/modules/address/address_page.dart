@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:projeto_cuidapet/app/core/ui/extensions/theme_extension.dart';
+import 'package:projeto_cuidapet/app/model/place_model.dart';
 
 part './widgets/address_item.dart';
+part './widgets/address_search_widget.dart';
 
 class AddressPage extends StatelessWidget {
   const AddressPage({super.key});
@@ -30,17 +35,7 @@ class AddressPage extends StatelessWidget {
               SizedBox(
                 height: 16,
               ),
-              Material(
-                elevation: 10,
-                borderRadius: BorderRadius.circular(20),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                ),
-              ),
+              _AddressSearchWidget(),
               SizedBox(
                 height: 20,
               ),
