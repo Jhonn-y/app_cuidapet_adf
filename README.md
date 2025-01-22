@@ -14,4 +14,6 @@ adicionar google_service.json, GoogleService-Info.plist, firebase.json e firebas
 seguir o passo a passo para fazer o login com o facebook com o site:
 https://facebook.meedu.app/docs/7.x.x/android/
 
+versão MUITO antiga do google_place, ter que arrumar para colocar um package mais atual
+
 atualizar os metodos de cadastro por email e senha, pois ja esta na versão legada

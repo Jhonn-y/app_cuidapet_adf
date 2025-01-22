@@ -20,7 +20,7 @@ class SocialRepo implements ISocialRepo {
           email: userData['email'],
           type: 'Facebook',
           avatar: userData['picture']['data']['url'],
-          accessToken: result.accessToken?.tokenString ?? '',
+          accessToken: result.accessToken?.token ?? '',
         );
       case LoginStatus.cancelled:
         throw Failure(message: 'Login cancelado');
