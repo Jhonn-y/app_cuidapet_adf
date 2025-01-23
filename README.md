@@ -17,3 +17,8 @@ https://facebook.meedu.app/docs/7.x.x/android/
 versão MUITO antiga do google_place, ter que arrumar para colocar um package mais atual
 
 atualizar os metodos de cadastro por email e senha, pois ja esta na versão legada
+
+colocar <string name="google_api_key">google_api</string> no strings.xml
+
+
+item view builder para mapeamento das ruas não funciona (address_search_widget.dart)

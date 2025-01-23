@@ -7,6 +7,10 @@ import 'package:projeto_cuidapet/app/core/logger/app_logger_impl.dart';
 import 'package:projeto_cuidapet/app/core/rest_client/dio/dio_rest_client.dart';
 import 'package:projeto_cuidapet/app/core/rest_client/rest_client.dart';
 import 'package:projeto_cuidapet/app/modules/core_module/auth/auth_store.dart';
+import 'package:projeto_cuidapet/app/repo/address/address_repo.dart';
+import 'package:projeto_cuidapet/app/repo/address/i_address_repo.dart';
+import 'package:projeto_cuidapet/app/services/address/address_service.dart';
+import 'package:projeto_cuidapet/app/services/address/i_address_service.dart';
 
 class CoreModule extends Module {
   @override
@@ -17,5 +21,7 @@ class CoreModule extends Module {
         FlutterSecureStorageLocalStorageImpl.new);
     i.addLazySingleton(AuthStore.new);
     i.addLazySingleton<RestClient>(DioRestClient.new);
+    i.addLazySingleton<IAddressRepo>(AddressRepo.new);
+    i.addLazySingleton<IAddressService>(AddressService.new);
   }
 }

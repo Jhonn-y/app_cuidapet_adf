@@ -6,9 +6,6 @@ import 'package:projeto_cuidapet/app/modules/home/home_module.dart';
 
 class AppModule extends Module {
   @override
-  void binds(Injector i) {}
-
-  @override
   List<Module> get imports => [
         CoreModule(),
       ];
