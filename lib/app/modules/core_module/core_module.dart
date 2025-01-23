@@ -1,4 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:projeto_cuidapet/app/core/database/sqlite_conn_factory.dart';
 import 'package:projeto_cuidapet/app/core/local_storage/flutter_secured_storage/flutter_secure_storage_local_storage_impl.dart';
 import 'package:projeto_cuidapet/app/core/local_storage/local_storage.dart';
 import 'package:projeto_cuidapet/app/core/local_storage/shared_preferences/shared_preferences_local_storage_impl.dart';
@@ -15,6 +16,7 @@ import 'package:projeto_cuidapet/app/services/address/i_address_service.dart';
 class CoreModule extends Module {
   @override
   void exportedBinds(Injector i) {
+    i.addLazySingleton(SqliteConnFactory.new);
     i.addLazySingleton<AppLogger>(AppLoggerImpl.new);
     i.addLazySingleton<LocalStorage>(SharedPreferencesLocalStorageImpl.new);
     i.addLazySingleton<LocalSecureStorage>(

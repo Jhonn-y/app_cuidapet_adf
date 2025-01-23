@@ -2,10 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:asuka/asuka.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:projeto_cuidapet/app/core/database/sqlite_adm_connection.dart';
 import 'package:projeto_cuidapet/app/core/ui/ui_config.dart';
 
-class AppWigdet extends StatelessWidget {
+class AppWigdet extends StatefulWidget {
   const AppWigdet({super.key});
+
+  @override
+  State<AppWigdet> createState() => _AppWigdetState();
+}
+
+class _AppWigdetState extends State<AppWigdet> {
+
+  final sqliteAdmConnection = SqliteAdmConnection();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(sqliteAdmConnection);
+  }
+
+  @override
+  void dispose(){
+    WidgetsBinding.instance.removeObserver(sqliteAdmConnection);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

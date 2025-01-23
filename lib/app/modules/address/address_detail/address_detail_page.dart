@@ -19,15 +19,18 @@ class _AddressDetailPageState extends State<AddressDetailPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: context.primaryColor),
+        iconTheme: IconThemeData(color: Color(0x00000000)),
         elevation: 0,
       ),
       body: Column(
         children: [
-          Text(
-            'Confirme seu endereço',
-            style: context.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical:8.0),
+            child: Text(
+              'Confirme seu endereço',
+              style: context.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           SizedBox(height: 16),
