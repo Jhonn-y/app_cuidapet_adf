@@ -15,10 +15,10 @@ abstract class _AddressControllerBase with Store, ControllerLifeCycle {
   final IAddressService _addressService;
 
   @readonly
-  List<AddressEntity> _address = [];
+  var _address = <AddressEntity>[];
 
   @readonly
-  bool _locationServiceUnavailable = false;
+  var _locationServiceUnavailable = false;
 
   @readonly
   LocationPermission? _locationPermission;
@@ -40,6 +40,10 @@ abstract class _AddressControllerBase with Store, ControllerLifeCycle {
 
   @action
   Future<void> getMyLocation() async {
+
+    _locationPermission = null;
+    _locationServiceUnavailable = false;
+
     final serviceEnable = await Geolocator.isLocationServiceEnabled();
 
     if (!serviceEnable) {

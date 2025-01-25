@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:mobx/mobx.dart';
 import 'package:projeto_cuidapet/app/core/life_cycle/page_life_cycle_state.dart';
+import 'package:projeto_cuidapet/app/core/mixins/location_mixin.dart';
 import 'package:projeto_cuidapet/app/core/ui/extensions/theme_extension.dart';
 import 'package:projeto_cuidapet/app/model/place_model.dart';
 import 'package:projeto_cuidapet/app/modules/address/address_controller.dart';
@@ -19,8 +22,43 @@ class AddressPage extends StatefulWidget {
 }
 
 class _AddressPageState
-    extends PageLifeCycleState<AddressController, AddressPage> {
-  final _controller = Modular.get<AddressController>();
+    extends PageLifeCycleState<AddressController, AddressPage>
+    with LocationMixin {
+  final reactorDisposers = <ReactionDisposer>[];
+
+  @override
+  void initState() {
+    super.initState();
+    final reactionService =
+        reaction<bool>((_) => controller.locationServiceUnavailable,
+            (locationServiceUnavailable) {
+      if (locationServiceUnavailable) {
+        showDialogLocationUnavailable();
+      }
+    });
+    final reactionLocationPermission = reaction<LocationPermission?>(
+        (_) => controller.locationPermission, (locationPermission) {
+      if (locationPermission != null &&
+          locationPermission == LocationPermission.denied) {
+        showDialogLocationDenied(() => controller.getMyLocation());
+      }else{
+        if (locationPermission != null &&
+          locationPermission == LocationPermission.denied) {
+            showDialogLocationDeniedForever();
+          }
+
+      }
+    });
+    reactorDisposers.addAll([reactionService, reactionLocationPermission]);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    for (var reaction in reactorDisposers) {
+      reaction();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,14 +86,14 @@ class _AddressPageState
               ),
               _AddressSearchWidget(
                 addressSelectedCallback: (place) {
-                  _controller.goToAddressDetailPage(place);
+                  controller.goToAddressDetailPage(place);
                 },
               ),
               SizedBox(
                 height: 30,
               ),
               ListTile(
-                onTap: () => _controller.getMyLocation(),
+                onTap: () => controller.getMyLocation(),
                 leading: CircleAvatar(
                   backgroundColor: Colors.red,
                   radius: 30,
@@ -75,7 +113,7 @@ class _AddressPageState
               Observer(
                 builder: (_) {
                   return Column(
-                    children: _controller.address
+                    children: controller.address
                         .map((a) => _ItemTile(address: a.address))
                         .toList(),
                   );
