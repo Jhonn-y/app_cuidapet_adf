@@ -48,13 +48,14 @@ class _AddressPageState
               ),
               _AddressSearchWidget(
                 addressSelectedCallback: (place) {
-                  Modular.to.pushNamed('/address/detail/', arguments: place);
+                  _controller.goToAddressDetailPage(place);
                 },
               ),
               SizedBox(
                 height: 30,
               ),
               ListTile(
+                onTap: () => _controller.getMyLocation(),
                 leading: CircleAvatar(
                   backgroundColor: Colors.red,
                   radius: 30,
