@@ -119,11 +119,12 @@ class _AddressPageState
                 builder: (_) {
                   return Column(
                     children: controller.address
-                        .map((a) => _ItemTile(
+                        .map((a) => _AddressItem(
                               address: a.address,
                               callback: () {
                                 controller.selectAddress(a);
                               },
+                              additional: a.additional,
                             ))
                         .toList(),
                   );
