@@ -1,4 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:projeto_cuidapet/app/modules/core_module/core_module.dart';
 import 'package:projeto_cuidapet/app/modules/home/home_controller.dart';
 import 'package:projeto_cuidapet/app/modules/home/home_page.dart';
 
@@ -7,6 +8,11 @@ class HomeModule extends Module {
   void binds(Injector i) {
     i.addSingleton(HomeController.new);
   }
+
+  @override
+  List<Module> get imports => [
+        CoreModule(),
+      ];
 
   @override
   void routes(RouteManager r) {
