@@ -41,12 +41,11 @@ class _AddressPageState
       if (locationPermission != null &&
           locationPermission == LocationPermission.denied) {
         showDialogLocationDenied(() => controller.getMyLocation());
-      }else{
+      } else {
         if (locationPermission != null &&
-          locationPermission == LocationPermission.denied) {
-            showDialogLocationDeniedForever();
-          }
-
+            locationPermission == LocationPermission.denied) {
+          showDialogLocationDeniedForever();
+        }
       }
     });
     reactorDisposers.addAll([reactionService, reactionLocationPermission]);
@@ -84,9 +83,15 @@ class _AddressPageState
               SizedBox(
                 height: 16,
               ),
-              _AddressSearchWidget(
-                addressSelectedCallback: (place) {
-                  controller.goToAddressDetailPage(place);
+              Observer(
+                builder: (_) {
+                  return _AddressSearchWidget(
+                    key: UniqueKey(),
+                    addressSelectedCallback: (place) {
+                      controller.goToAddressDetailPage(place);
+                    },
+                    place: controller.placeModel,
+                  );
                 },
               ),
               SizedBox(

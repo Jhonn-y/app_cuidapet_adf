@@ -23,6 +23,9 @@ abstract class _AddressControllerBase with Store, ControllerLifeCycle {
   @readonly
   LocationPermission? _locationPermission;
 
+  @readonly
+  PlaceModel? _placeModel;
+
   _AddressControllerBase({required IAddressService addressService})
       : _addressService = addressService;
 
@@ -87,7 +90,11 @@ abstract class _AddressControllerBase with Store, ControllerLifeCycle {
     goToAddressDetailPage(placeModel);
   }
 
-  void goToAddressDetailPage(PlaceModel place) {
-    Modular.to.pushNamed('/address/detail/', arguments: place);
+  Future<void> goToAddressDetailPage(PlaceModel place) async {
+    final address = await Modular.to.pushNamed('/address/detail/', arguments: place);
+
+    if(address is PlaceModel){
+      _placeModel = address;
+    }
   }
 }

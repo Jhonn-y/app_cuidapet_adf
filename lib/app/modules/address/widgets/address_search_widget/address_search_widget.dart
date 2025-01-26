@@ -1,13 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 part of '../../address_page.dart';
 
-typedef AddressSelectedCallback = void Function(PlaceModel); 
+typedef AddressSelectedCallback = void Function(PlaceModel);
+
 class _AddressSearchWidget extends StatefulWidget {
-
   final AddressSelectedCallback addressSelectedCallback;
+  final PlaceModel? place;
 
-  _AddressSearchWidget({
+  const _AddressSearchWidget({
+    super.key,
     required this.addressSelectedCallback,
+    required this.place,
   });
 
   @override
@@ -19,6 +22,15 @@ class _AddressSearchWidgetState extends State<_AddressSearchWidget> {
   final _searchTextFN = FocusNode();
 
   final _controller = Modular.get<AddressSearchController>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.place != null) {
+      _searchTextEC.text = widget.place?.address ?? '';
+      _searchTextFN.requestFocus();
+    }
+  }
 
   @override
   void dispose() {
@@ -69,7 +81,6 @@ class _AddressSearchWidgetState extends State<_AddressSearchWidget> {
   void _onSelected(PlaceModel suggestion) {
     _searchTextEC.text = suggestion.address;
     widget.addressSelectedCallback(suggestion);
-
   }
 }
 
