@@ -16,7 +16,11 @@ class _HomePageState extends PageLifeCycleState<HomeController,HomePage> {
       appBar: AppBar(
         title: const Text('Home'),
       ),
-      body: Container(),
+      body: Container(
+        child: TextButton(onPressed: (){
+          controller.goToAddressPage();
+        }, child: Text('data')),
+      ),
     );
   }
 }

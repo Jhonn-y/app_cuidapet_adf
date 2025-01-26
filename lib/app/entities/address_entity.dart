@@ -31,7 +31,7 @@ class AddressEntity {
       address: map['address'] as String,
       lat: double.parse(map['lat'] ?? '0.0'),
       lng: double.parse(map['lng'] ?? '0.0'),
-      additional: map['additional'] as String,
+      additional: map['additional'].toString(),
     );
   }
 

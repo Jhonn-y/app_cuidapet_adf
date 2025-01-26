@@ -61,76 +61,84 @@ class _AddressPageState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: context.primaryColorDark),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (await controller.addressWasSelected()) {
+          Modular.to.pop();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: context.primaryColorDark),
+          backgroundColor: Colors.white,
+          elevation: 0,
+        ),
         backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(13),
-          child: Column(
-            children: [
-              Text(
-                'Adicione ou escolha um endereço',
-                style: context.textTheme.headlineMedium?.copyWith(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Observer(
-                builder: (_) {
-                  return _AddressSearchWidget(
-                    key: UniqueKey(),
-                    addressSelectedCallback: (place) {
-                      controller.goToAddressDetailPage(place);
-                    },
-                    place: controller.placeModel,
-                  );
-                },
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              ListTile(
-                onTap: () => controller.getMyLocation(),
-                leading: CircleAvatar(
-                  backgroundColor: Colors.red,
-                  radius: 30,
-                  child: Icon(
-                    Icons.near_me,
-                    color: Colors.white,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(13),
+            child: Column(
+              children: [
+                Text(
+                  'Adicione ou escolha um endereço',
+                  style: context.textTheme.headlineMedium?.copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                title: Text(
-                  'Localização Atual',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
+                SizedBox(
+                  height: 16,
                 ),
-                trailing: Icon(Icons.arrow_forward_ios),
-              ),
-              Observer(
-                builder: (_) {
-                  return Column(
-                    children: controller.address
-                        .map((a) => _AddressItem(
-                              address: a.address,
-                              callback: () {
-                                controller.selectAddress(a);
-                              },
-                              additional: a.additional,
-                            ))
-                        .toList(),
-                  );
-                },
-              )
-            ],
+                Observer(
+                  builder: (_) {
+                    return _AddressSearchWidget(
+                      key: UniqueKey(),
+                      addressSelectedCallback: (place) {
+                        controller.goToAddressDetailPage(place);
+                      },
+                      place: controller.placeModel,
+                    );
+                  },
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                ListTile(
+                  onTap: () => controller.getMyLocation(),
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.red,
+                    radius: 30,
+                    child: Icon(
+                      Icons.near_me,
+                      color: Colors.white,
+                    ),
+                  ),
+                  title: Text(
+                    'Localização Atual',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                  trailing: Icon(Icons.arrow_forward_ios),
+                ),
+                Observer(
+                  builder: (_) {
+                    return Column(
+                      children: controller.address
+                          .map((a) => _AddressItem(
+                                address: a.address,
+                                callback: () {
+                                  controller.selectAddress(a);
+                                },
+                                additional: a.additional,
+                              ))
+                          .toList(),
+                    );
+                  },
+                )
+              ],
+            ),
           ),
         ),
       ),

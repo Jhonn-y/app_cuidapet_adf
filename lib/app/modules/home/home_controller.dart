@@ -3,15 +3,15 @@ import 'package:mobx/mobx.dart';
 import 'package:projeto_cuidapet/app/core/life_cycle/controller_life_cycle.dart';
 import 'package:projeto_cuidapet/app/core/ui/widgets/loader.dart';
 import 'package:projeto_cuidapet/app/entities/address_entity.dart';
-import 'package:projeto_cuidapet/app/services/address/address_service.dart';
+import 'package:projeto_cuidapet/app/services/address/i_address_service.dart';
 part 'home_controller.g.dart';
 
 class HomeController = _HomeControllerBase with _$HomeController;
 
 abstract class _HomeControllerBase with Store, ControllerLifeCycle {
-  final AddressService _addressService;
+  final IAddressService _addressService;
 
-  _HomeControllerBase({required AddressService addressService})
+  _HomeControllerBase({required IAddressService addressService})
       : _addressService = addressService;
 
   @readonly
@@ -36,6 +36,8 @@ abstract class _HomeControllerBase with Store, ControllerLifeCycle {
   @action
   Future<void> goToAddressPage() async {
     final address = await Modular.to.pushNamed<AddressEntity>('/address/');
-    _addressEntity = address;
+    if(address != null){
+      _addressEntity = address;
+    }
   }
 }

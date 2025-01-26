@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:mobx/mobx.dart';
 import 'package:projeto_cuidapet/app/core/life_cycle/controller_life_cycle.dart';
 import 'package:projeto_cuidapet/app/core/ui/widgets/loader.dart';
+import 'package:projeto_cuidapet/app/core/ui/widgets/messages.dart';
 import 'package:projeto_cuidapet/app/entities/address_entity.dart';
 import 'package:projeto_cuidapet/app/model/place_model.dart';
 import 'package:projeto_cuidapet/app/services/address/i_address_service.dart';
@@ -103,5 +104,15 @@ abstract class _AddressControllerBase with Store, ControllerLifeCycle {
   Future<void> selectAddress(AddressEntity addressEntity) async {
     await _addressService.selectAddress(addressEntity);
     Modular.to.pop(addressEntity);
+  }
+
+  Future<bool> addressWasSelected() async {
+    final address = await _addressService.getSelectedAddress();
+
+    if (address != null) {
+      return true;
+    }
+    Messages.alert('Por favor, selecione ou cadastre um endereço!');
+    return false;
   }
 }
