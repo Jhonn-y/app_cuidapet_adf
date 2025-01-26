@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:projeto_cuidapet/app/core/life_cycle/page_life_cycle_state.dart';
-import 'package:projeto_cuidapet/app/core/ui/extensions/theme_extension.dart';
 import 'package:projeto_cuidapet/app/modules/home/home_controller.dart';
 import 'package:projeto_cuidapet/app/modules/home/widgets/home_appbar.dart';
 
@@ -30,8 +29,10 @@ class _HomePageState extends PageLifeCycleState<HomeController, HomePage> {
                   controller: controller,
                 ),
               ),
-              SizedBox(
-                height: 20,
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 20,
+                ),
               ),
               SliverToBoxAdapter(
                 child: _HomeCategoriesWidget(),
