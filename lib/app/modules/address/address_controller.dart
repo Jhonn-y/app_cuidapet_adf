@@ -43,7 +43,6 @@ abstract class _AddressControllerBase with Store, ControllerLifeCycle {
 
   @action
   Future<void> getMyLocation() async {
-
     _locationPermission = null;
     _locationServiceUnavailable = false;
 
@@ -91,10 +90,18 @@ abstract class _AddressControllerBase with Store, ControllerLifeCycle {
   }
 
   Future<void> goToAddressDetailPage(PlaceModel place) async {
-    final address = await Modular.to.pushNamed('/address/detail/', arguments: place);
+    final address =
+        await Modular.to.pushNamed('/address/detail/', arguments: place);
 
-    if(address is PlaceModel){
+    if (address is PlaceModel) {
       _placeModel = address;
+    } else if (address is AddressEntity) {
+      selectAddress(address);
     }
+  }
+
+  Future<void> selectAddress(AddressEntity addressEntity) async {
+    await _addressService.selectAddress(addressEntity);
+    Modular.to.pop();
   }
 }

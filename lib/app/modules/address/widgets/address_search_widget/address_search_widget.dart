@@ -49,9 +49,11 @@ class _AddressSearchWidgetState extends State<_AddressSearchWidget> {
       elevation: 10,
       borderRadius: BorderRadius.circular(20),
       child: TypeAheadField<PlaceModel>(
-        builder: (context, controller, focusNode) => TextField(
-          controller: _searchTextEC,
-          focusNode: _searchTextFN,
+        controller:_searchTextEC,
+        focusNode: _searchTextFN,
+        builder: (_, controller, focusNode) => TextField(
+          controller: controller,
+          focusNode: focusNode,
           decoration: InputDecoration(
               prefixIcon: Icon(Icons.location_on),
               hintText: 'Insira um endereço',
@@ -86,12 +88,13 @@ class _AddressSearchWidgetState extends State<_AddressSearchWidget> {
 
 class _ItemTile extends StatelessWidget {
   final String address;
+  final VoidCallback? callback;
+  const _ItemTile({required this.address,this.callback});
 
-  const _ItemTile({required this.address});
-
-  @override
+  @override 
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: callback,
       leading: Icon(Icons.location_on),
       title: Text(address),
     );

@@ -19,8 +19,8 @@ class AddressEntity {
     return <String, dynamic>{
       'id': id,
       'address': address,
-      'lat': lat,
-      'lng': lng,
+      'lat': lat.toString(),
+      'lng': lng.toString(),
       'additional': additional,
     };
   }
@@ -29,8 +29,8 @@ class AddressEntity {
     return AddressEntity(
       id: map['id'] != null ? map['id'] as int : null,
       address: map['address'] as String,
-      lat: double.parse(map['lat']),
-      lng: double.parse(map['lng']),
+      lat: double.parse(map['lat'] ?? '0.0'),
+      lng: double.parse(map['lng'] ?? '0.0'),
       additional: map['additional'] as String,
     );
   }
