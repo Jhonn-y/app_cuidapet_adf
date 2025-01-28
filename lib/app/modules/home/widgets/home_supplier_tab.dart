@@ -18,7 +18,7 @@ class _HomeSupplierTab extends StatelessWidget {
                 duration: Duration(milliseconds: 400),
                 child: _controller.pageTypeSelected == SupplierPageType.list
                     ? _HomeSupplierList(_controller)
-                    : _HomeSupplierGrid(),
+                    : _HomeSupplierGrid(_controller),
               );
             },
           ),
@@ -179,7 +179,7 @@ class _HomeSupplierItemList extends StatelessWidget {
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(100),
                 image: DecorationImage(
-                  image: AssetImage(_model.logo),
+                  image: NetworkImage(_model.logo),
                   fit: BoxFit.contain,
                 ),
               ),
@@ -192,16 +192,99 @@ class _HomeSupplierItemList extends StatelessWidget {
 }
 
 class _HomeSupplierGrid extends StatelessWidget {
-  // ignore: unused_element
-  const _HomeSupplierGrid({super.key});
+  final HomeController _controller;
+  const _HomeSupplierGrid(this._controller);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(''),
-      ),
-      body: Container(),
+    return CustomScrollView(
+      slivers: [
+        Observer(
+            builder: (_) {
+                return SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                    childCount: _controller.listSupplierByAddress.length,
+                    (context, index) {
+                      final supplier = _controller.listSupplierByAddress[index];
+                      return _HomeSupplierGridItem(supplier);
+                    },
+                  ),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.1,
+                  ),
+                );
+            },
+        )
+      ],
+    );
+  }
+}
+
+class _HomeSupplierGridItem extends StatelessWidget {
+  final SupplierNearByMeModel _model;
+  const _HomeSupplierGridItem(this._model);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Card(
+          margin: EdgeInsets.only(
+            top: 40,
+            left: 10,
+            right: 10,
+            bottom: 10,
+          ),
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: SizedBox.expand(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 40,
+                right: 10,
+                left: 10,
+                bottom: 10,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    _model.name,
+                    style: context.textTheme.titleMedium,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    '${_model.distance.toStringAsFixed(2)} Km de distância',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.topCenter,
+          child: CircleAvatar(
+            radius: 40,
+            backgroundColor: Colors.grey[200],
+          ),
+        ),
+        Positioned(
+          top: 4,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: CircleAvatar(
+              radius: 35,
+              backgroundImage: NetworkImage(_model.logo),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
