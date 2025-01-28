@@ -17,7 +17,7 @@ class _HomeSupplierTab extends StatelessWidget {
               return AnimatedSwitcher(
                 duration: Duration(milliseconds: 400),
                 child: _controller.pageTypeSelected == SupplierPageType.list
-                    ? _HomeSupplierList()
+                    ? _HomeSupplierList(_controller)
                     : _HomeSupplierGrid(),
               );
             },
@@ -73,27 +73,34 @@ class _HomeTabHeader extends StatelessWidget {
 }
 
 class _HomeSupplierList extends StatelessWidget {
-  const _HomeSupplierList();
+  final HomeController _controller;
+  const _HomeSupplierList(this._controller);
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            childCount: 10,
-            (context, index) {
-              return _HomeSupplierItemList();
-            },
-          ),
-        ),
+        Observer(
+          builder: (_) {
+            return SliverList(
+              delegate: SliverChildBuilderDelegate(
+                childCount: _controller.listSupplierByAddress.length,
+                (context, index) {
+                  final supplier = _controller.listSupplierByAddress[index];
+                  return _HomeSupplierItemList(supplier);
+                },
+              ),
+            );
+          },
+        )
       ],
     );
   }
 }
 
 class _HomeSupplierItemList extends StatelessWidget {
-  const _HomeSupplierItemList();
+  final SupplierNearByMeModel _model;
+  const _HomeSupplierItemList(this._model);
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +126,7 @@ class _HomeSupplierItemList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'data',
+                          _model.name,
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(
@@ -131,7 +138,8 @@ class _HomeSupplierItemList extends StatelessWidget {
                               Icons.location_on,
                               size: 16,
                             ),
-                            Text('data'),
+                            Text(
+                                '${_model.distance.toStringAsFixed(2)} Km de distância'),
                           ],
                         ),
                       ],
@@ -171,7 +179,7 @@ class _HomeSupplierItemList extends StatelessWidget {
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(100),
                 image: DecorationImage(
-                  image: AssetImage('assets/images/logo.png'),
+                  image: AssetImage(_model.logo),
                   fit: BoxFit.contain,
                 ),
               ),

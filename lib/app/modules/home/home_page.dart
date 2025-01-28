@@ -4,6 +4,7 @@ import 'package:projeto_cuidapet/app/core/life_cycle/page_life_cycle_state.dart'
 import 'package:projeto_cuidapet/app/core/ui/extensions/size_screen_extension.dart';
 import 'package:projeto_cuidapet/app/core/ui/extensions/theme_extension.dart';
 import 'package:projeto_cuidapet/app/model/supplier_category_model.dart';
+import 'package:projeto_cuidapet/app/model/supplier_near_by_me_model.dart';
 import 'package:projeto_cuidapet/app/modules/home/home_controller.dart';
 import 'package:projeto_cuidapet/app/modules/home/widgets/home_appbar.dart';
 

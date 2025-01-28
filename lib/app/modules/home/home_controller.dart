@@ -5,6 +5,7 @@ import 'package:projeto_cuidapet/app/core/ui/widgets/loader.dart';
 import 'package:projeto_cuidapet/app/core/ui/widgets/messages.dart';
 import 'package:projeto_cuidapet/app/entities/address_entity.dart';
 import 'package:projeto_cuidapet/app/model/supplier_category_model.dart';
+import 'package:projeto_cuidapet/app/model/supplier_near_by_me_model.dart';
 import 'package:projeto_cuidapet/app/services/address/i_address_service.dart';
 import 'package:projeto_cuidapet/app/services/supplier/i_supplier_service.dart';
 part 'home_controller.g.dart';
@@ -33,12 +34,31 @@ abstract class _HomeControllerBase with Store, ControllerLifeCycle {
   @readonly
   SupplierPageType _pageTypeSelected = SupplierPageType.list;
 
+  @readonly
+  var _listSupplierByAddress = <SupplierNearByMeModel>[];
+
+  late ReactionDisposer findSupplierReactionDisposer;
+
+  @override
+  void onInit([Map<String, dynamic>? params]) {
+    findSupplierReactionDisposer = reaction((_) => _addressEntity, (address) {
+      findSupplierByAddress();
+    });
+  }
+
+  @override
+  void dispose() {
+    findSupplierReactionDisposer();
+    super.dispose();
+  }
+
   @override
   Future<void> onReady() async {
     try {
       Loader.show();
       await _getAddressSelected();
       // await _getCategories();
+      findSupplierByAddress();
     } finally {
       Loader.hide();
     }
@@ -73,7 +93,17 @@ abstract class _HomeControllerBase with Store, ControllerLifeCycle {
   }
 
   @action
-  void changeTabSupplier(SupplierPageType type){
+  void changeTabSupplier(SupplierPageType type) {
     _pageTypeSelected = type;
+  }
+
+  @action
+  Future<void> findSupplierByAddress() async {
+    if (_addressEntity != null) {
+      final suppliers = await _supplierService.findNearBy(_addressEntity!);
+      _listSupplierByAddress = [...suppliers];
+    } else {
+      Messages.alert('Selecione um endereço para podermos fazer a busca!');
+    }
   }
 }
