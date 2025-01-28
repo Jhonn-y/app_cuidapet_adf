@@ -9,6 +9,9 @@ import 'package:projeto_cuidapet/app/services/address/i_address_service.dart';
 import 'package:projeto_cuidapet/app/services/supplier/i_supplier_service.dart';
 part 'home_controller.g.dart';
 
+enum SupplierPageType { list, grid }
+
+// ignore: library_private_types_in_public_api
 class HomeController = _HomeControllerBase with _$HomeController;
 
 abstract class _HomeControllerBase with Store, ControllerLifeCycle {
@@ -27,16 +30,18 @@ abstract class _HomeControllerBase with Store, ControllerLifeCycle {
   @readonly
   var _listCategories = <SupplierCategoryModel>[];
 
+  @readonly
+  SupplierPageType _pageTypeSelected = SupplierPageType.list;
+
   @override
   Future<void> onReady() async {
     try {
-  Loader.show();
-  await _getAddressSelected();
-  await _getCategories();
-} finally {
-  Loader.hide();
-  
-}
+      Loader.show();
+      await _getAddressSelected();
+      // await _getCategories();
+    } finally {
+      Loader.hide();
+    }
   }
 
   @action
@@ -56,6 +61,7 @@ abstract class _HomeControllerBase with Store, ControllerLifeCycle {
     }
   }
 
+  @action
   Future<void> _getCategories() async {
     try {
       final categories = await _supplierService.getCategories();
@@ -64,5 +70,10 @@ abstract class _HomeControllerBase with Store, ControllerLifeCycle {
       Messages.alert('Erro ao buscar categorias');
       throw Exception();
     }
+  }
+
+  @action
+  void changeTabSupplier(SupplierPageType type){
+    _pageTypeSelected = type;
   }
 }

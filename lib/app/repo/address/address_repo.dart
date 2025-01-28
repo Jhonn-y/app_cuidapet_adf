@@ -10,7 +10,7 @@ import 'package:projeto_cuidapet/app/model/place_model.dart';
 import './i_address_repo.dart';
 
 class AddressRepo implements IAddressRepo {
-  SqliteConnFactory _sqliteConnectionFactory;
+  final SqliteConnFactory _sqliteConnectionFactory;
   AddressRepo({
     required SqliteConnFactory sqliteConnectionFactory,
   }) : _sqliteConnectionFactory = sqliteConnectionFactory;

@@ -3,7 +3,7 @@ import 'package:mobx/mobx.dart';
 import 'package:projeto_cuidapet/app/core/helpers/constants.dart';
 import 'package:projeto_cuidapet/app/core/local_storage/local_storage.dart';
 import 'package:projeto_cuidapet/app/model/user_model.dart';
-import 'package:projeto_cuidapet/app/services/address/address_service.dart';
+import 'package:projeto_cuidapet/app/services/address/i_address_service.dart';
 
 part 'auth_store.g.dart';
 
@@ -12,7 +12,7 @@ class AuthStore = _AuthStoreBase with _$AuthStore;
 abstract class _AuthStoreBase with Store {
   final LocalStorage _localStorage;
   final LocalSecureStorage _secureStorage;
-  final AddressService _addressService;
+  final IAddressService _addressService;
 
   @readonly
   UserModel? _userModel;
@@ -20,7 +20,7 @@ abstract class _AuthStoreBase with Store {
   _AuthStoreBase(
       {required LocalSecureStorage secureStorage,
       required LocalStorage localStorage,
-      required AddressService addressService})
+      required IAddressService addressService})
       : _localStorage = localStorage,
         _addressService = addressService,
         _secureStorage = secureStorage;
