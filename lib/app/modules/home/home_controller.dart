@@ -2,26 +2,41 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 import 'package:projeto_cuidapet/app/core/life_cycle/controller_life_cycle.dart';
 import 'package:projeto_cuidapet/app/core/ui/widgets/loader.dart';
+import 'package:projeto_cuidapet/app/core/ui/widgets/messages.dart';
 import 'package:projeto_cuidapet/app/entities/address_entity.dart';
+import 'package:projeto_cuidapet/app/model/supplier_category_model.dart';
 import 'package:projeto_cuidapet/app/services/address/i_address_service.dart';
+import 'package:projeto_cuidapet/app/services/supplier/i_supplier_service.dart';
 part 'home_controller.g.dart';
 
 class HomeController = _HomeControllerBase with _$HomeController;
 
 abstract class _HomeControllerBase with Store, ControllerLifeCycle {
   final IAddressService _addressService;
+  final ISupplierService _supplierService;
 
-  _HomeControllerBase({required IAddressService addressService})
-      : _addressService = addressService;
+  _HomeControllerBase(
+      {required ISupplierService supplierService,
+      required IAddressService addressService})
+      : _addressService = addressService,
+        _supplierService = supplierService;
 
   @readonly
   AddressEntity? _addressEntity;
 
+  @readonly
+  var _listCategories = <SupplierCategoryModel>[];
+
   @override
   Future<void> onReady() async {
-    Loader.show();
-    await _getAddressSelected();
-    Loader.hide();
+    try {
+  Loader.show();
+  await _getAddressSelected();
+  await _getCategories();
+} finally {
+  Loader.hide();
+  
+}
   }
 
   @action
@@ -36,8 +51,18 @@ abstract class _HomeControllerBase with Store, ControllerLifeCycle {
   @action
   Future<void> goToAddressPage() async {
     final address = await Modular.to.pushNamed<AddressEntity>('/address/');
-    if(address != null){
+    if (address != null) {
       _addressEntity = address;
+    }
+  }
+
+  Future<void> _getCategories() async {
+    try {
+      final categories = await _supplierService.getCategories();
+      _listCategories = [...categories];
+    } catch (e) {
+      Messages.alert('Erro ao buscar categorias');
+      throw Exception();
     }
   }
 }
