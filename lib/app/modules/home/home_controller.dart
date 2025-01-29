@@ -37,6 +37,11 @@ abstract class _HomeControllerBase with Store, ControllerLifeCycle {
   @readonly
   var _listSupplierByAddress = <SupplierNearByMeModel>[];
 
+  var _listSupplierByAddressCache = <SupplierNearByMeModel>[];
+
+  @readonly
+  SupplierCategoryModel? _supplierCategoryFilterSelected;
+
   late ReactionDisposer findSupplierReactionDisposer;
 
   @override
@@ -102,8 +107,32 @@ abstract class _HomeControllerBase with Store, ControllerLifeCycle {
     if (_addressEntity != null) {
       final suppliers = await _supplierService.findNearBy(_addressEntity!);
       _listSupplierByAddress = [...suppliers];
+      _listSupplierByAddressCache = [...suppliers];
+      filterSupplier();
     } else {
       Messages.alert('Selecione um endereço para podermos fazer a busca!');
     }
+  }
+
+  @action
+  void filterCategory(SupplierCategoryModel category) {
+    if (_supplierCategoryFilterSelected == category) {
+      _supplierCategoryFilterSelected = null;
+    } else {
+      _supplierCategoryFilterSelected = category;
+    }
+    filterSupplier();
+  }
+
+  @action
+  void filterSupplier() {
+    var suppliers = [..._listSupplierByAddressCache];
+    if (_supplierCategoryFilterSelected != null) {
+      suppliers = suppliers
+          .where((supplier) =>
+              supplier.category == _supplierCategoryFilterSelected?.id)
+          .toList();
+    }
+    _listSupplierByAddress = [...suppliers];
   }
 }

@@ -15,7 +15,7 @@ class _HomeCategoriesWidget extends StatelessWidget {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   final category = _controller.listCategories[index];
-                  return _CategoryItem(category);
+                  return _CategoryItem(category,_controller);
                 },
                 scrollDirection: Axis.horizontal,
                 itemCount: _controller.listCategories.length,
@@ -28,6 +28,7 @@ class _HomeCategoriesWidget extends StatelessWidget {
 
 class _CategoryItem extends StatelessWidget {
   final SupplierCategoryModel _categoryModel;
+  final HomeController _controller;
 
   static const categoriesItem = {
     'P': Icons.pets,
@@ -35,25 +36,36 @@ class _CategoryItem extends StatelessWidget {
     'C': Icons.store_mall_directory
   };
 
-  const _CategoryItem(this._categoryModel);
+  const _CategoryItem(this._categoryModel, this._controller);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(20),
-      child: Column(
-        children: [
-          CircleAvatar(
-            backgroundColor: Colors.grey[400],
-            radius: 30,
-            child: Icon(categoriesItem[_categoryModel.type],
-                size: 30, color: Colors.black),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(_categoryModel.name),
-        ],
+    return InkWell(
+      onTap: () => _controller.filterCategory(_categoryModel),
+      child: Container(
+        margin: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Observer(
+              builder: (_) {
+                return CircleAvatar(
+                  backgroundColor:
+                      _controller.supplierCategoryFilterSelected?.id ==
+                              _categoryModel.id
+                          ? context.primaryColor
+                          : Colors.grey[400],
+                  radius: 30,
+                  child: Icon(categoriesItem[_categoryModel.type],
+                      size: 30, color: Colors.black),
+                );
+              },
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(_categoryModel.name),
+          ],
+        ),
       ),
     );
   }
