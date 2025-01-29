@@ -29,7 +29,7 @@ class _AppWigdetState extends State<AppWigdet> {
 
   @override
   Widget build(BuildContext context) {
-    Modular.setInitialRoute('/home/');
+    Modular.setInitialRoute('/supplier/');
     Modular.setObservers([Asuka.asukaHeroController]);
 
     return ScreenUtilInit(
