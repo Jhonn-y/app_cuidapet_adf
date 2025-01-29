@@ -35,6 +35,7 @@ home_controller.g.dart
 address_search_controller.g.dart
 address_detail_controller.g.dart
 address_controller.g.dart
+supplier_controller.g.dart
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.

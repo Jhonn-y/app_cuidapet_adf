@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:projeto_cuidapet/app/core/life_cycle/page_life_cycle_state.dart';
 import 'package:projeto_cuidapet/app/core/ui/extensions/theme_extension.dart';
+import 'package:projeto_cuidapet/app/modules/supplier/supplier_controller.dart';
 import 'package:projeto_cuidapet/app/modules/supplier/widgets/supplier_detail_widget.dart';
 import 'package:projeto_cuidapet/app/modules/supplier/widgets/supplier_service_widget.dart';
 
 class SupplierPage extends StatefulWidget {
-  const SupplierPage({super.key});
+  final int _supplierID;
+  const SupplierPage({super.key, required int supplierID})
+      : _supplierID = supplierID;
 
   @override
   State<SupplierPage> createState() => _SupplierPageState();
 }
 
-class _SupplierPageState extends State<SupplierPage> {
+class _SupplierPageState
+    extends PageLifeCycleState<SupplierController, SupplierPage> {
   late ScrollController _scrollController;
   final sliverColapsedVN = ValueNotifier(false);
+
+  @override
+  Map<String, dynamic>? get params => {'supplierId': widget._supplierID};
 
   @override
   void initState() {
@@ -38,68 +47,85 @@ class _SupplierPageState extends State<SupplierPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        label: Text(
-          'Fazer agendamento',
-          style: TextStyle(color: Colors.white),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {},
+          label: Text(
+            'Fazer agendamento',
+            style: TextStyle(color: Colors.white),
+          ),
+          icon: Icon(
+            Icons.schedule,
+            color: Colors.white,
+          ),
+          backgroundColor: context.primaryColor,
         ),
-        icon: Icon(
-          Icons.schedule,
-          color: Colors.white,
-        ),
-        backgroundColor: context.primaryColor,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverAppBar(
-            title: ValueListenableBuilder(
-              valueListenable: sliverColapsedVN,
-              builder: (_, sliverColapsedVN, child) {
-                return Visibility(
-                  visible: sliverColapsedVN,
-                  child: Text(
-                    'Clinica ABC',
-                    style: TextStyle(color: Colors.white),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        body: Observer(
+          builder: (_) {
+            final supplier = controller.supplierModel;
+
+            if (supplier == null) {
+              return Text('Buscando dados do fornecedor');
+            }
+            return CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverAppBar(
+                  title: ValueListenableBuilder(
+                    valueListenable: sliverColapsedVN,
+                    builder: (_, sliverColapsedVN, child) {
+                      return Visibility(
+                        visible: sliverColapsedVN,
+                        child: Text(
+                          supplier.name,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-            expandedHeight: 200,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              stretchModes: [
-                StretchMode.zoomBackground,
-                StretchMode.fadeTitle,
+                  expandedHeight: 200,
+                  pinned: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    stretchModes: [
+                      StretchMode.zoomBackground,
+                      StretchMode.fadeTitle,
+                    ],
+                    background: Image.network(
+                      supplier.logo,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: SupplierDetailWidget(
+                    supplier: supplier,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Serviços (0 selecionados)',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ),
+                ),
+                SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                        childCount: controller.supplierServiceModel.length,
+                        (context, index) {
+                  final service = controller.supplierServiceModel[index];
+
+                  return SupplierServiceWidget(
+                    serviceModel: service,
+                  );
+                }))
               ],
-              background: Image.asset(
-                'assets/images/logo.png',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => SizedBox.shrink(),
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: SupplierDetailWidget(),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Serviços (0 selecionados)',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-            ),
-          ),
-          SliverList(
-              delegate:
-                  SliverChildBuilderDelegate(childCount: 200, (context, index) {
-            return SupplierServiceWidget();
-          }))
-        ],
-      ),
-    );
+            );
+          },
+        ));
   }
 }
