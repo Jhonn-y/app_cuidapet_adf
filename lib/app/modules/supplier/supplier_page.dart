@@ -47,17 +47,27 @@ class _SupplierPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {},
-          label: Text(
-            'Fazer agendamento',
-            style: TextStyle(color: Colors.white),
-          ),
-          icon: Icon(
-            Icons.schedule,
-            color: Colors.white,
-          ),
-          backgroundColor: context.primaryColor,
+        floatingActionButton: Observer(
+          builder: (_) {
+            return AnimatedOpacity(
+              duration: Duration(milliseconds: 300),
+              opacity: controller.totalServicesSelected > 0 ? 1 : 0,
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  controller.goToSchedule();
+                },
+                label: Text(
+                  'Fazer agendamento',
+                  style: TextStyle(color: Colors.white),
+                ),
+                icon: Icon(
+                  Icons.schedule,
+                  color: Colors.white,
+                ),
+                backgroundColor: context.primaryColor,
+              ),
+            );
+          },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: Observer(
@@ -100,6 +110,7 @@ class _SupplierPageState
                 ),
                 SliverToBoxAdapter(
                   child: SupplierDetailWidget(
+                    controller: controller,
                     supplier: supplier,
                   ),
                 ),
@@ -107,7 +118,9 @@ class _SupplierPageState
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Serviços (0 selecionados)',
+                      'Serviços (${controller.totalServicesSelected} selecionado ${{
+                        controller.totalServicesSelected > 1 ? 's' : ''
+                      }})',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
@@ -121,6 +134,7 @@ class _SupplierPageState
 
                   return SupplierServiceWidget(
                     serviceModel: service,
+                    controller: controller,
                   );
                 }))
               ],

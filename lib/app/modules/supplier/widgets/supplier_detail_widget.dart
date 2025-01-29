@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_cuidapet/app/core/ui/extensions/theme_extension.dart';
 import 'package:projeto_cuidapet/app/model/supplier_model.dart';
+import 'package:projeto_cuidapet/app/modules/supplier/supplier_controller.dart';
 
 class SupplierDetailWidget extends StatelessWidget {
   final SupplierModel _supplier;
-  const SupplierDetailWidget({super.key, required SupplierModel supplier})
-      : _supplier = supplier;
+  final SupplierController _controller;
+
+  const SupplierDetailWidget(
+      {super.key,
+      required SupplierModel supplier,
+      required SupplierController controller})
+      : _supplier = supplier,
+        _controller = controller;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +42,9 @@ class SupplierDetailWidget extends StatelessWidget {
           ),
         ),
         ListTile(
+          onTap: () {
+            _controller.goToGeoOrCopyPhoneToClipart();
+          },
           leading: Icon(
             Icons.location_city,
             color: Colors.black,
@@ -42,6 +52,9 @@ class SupplierDetailWidget extends StatelessWidget {
           title: Text(_supplier.address),
         ),
         ListTile(
+          onTap: () {
+            _controller.goToPhoneOrCopyPhoneToClipart();
+          },
           leading: Icon(
             Icons.local_phone,
             color: Colors.black,
