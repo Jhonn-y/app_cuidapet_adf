@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_cuidapet/app/core/helpers/debounce.dart';
 import 'package:projeto_cuidapet/app/core/ui/extensions/size_screen_extension.dart';
 import 'package:projeto_cuidapet/app/core/ui/extensions/theme_extension.dart';
 import 'package:projeto_cuidapet/app/modules/home/home_controller.dart';
@@ -16,7 +17,8 @@ class HomeAppBar extends SliverAppBar {
 
 class _CuidapetAppBar extends StatelessWidget {
   final HomeController controller;
-  const _CuidapetAppBar(this.controller);
+  final _debouncer = Debounce(milliseconds: 500);
+  _CuidapetAppBar(this.controller);
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +59,11 @@ class _CuidapetAppBar extends StatelessWidget {
               child: SizedBox(
                 width: .9.sw,
                 child: TextFormField(
+                  onChanged: (value) {
+                    _debouncer.run(() {
+                      controller.filterSupplierByName(value);
+                    });
+                  },
                   decoration: InputDecoration(
                     fillColor: Colors.white,
                     filled: true,
