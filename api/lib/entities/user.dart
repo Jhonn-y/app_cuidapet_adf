@@ -48,4 +48,35 @@ class User {
       supplierID: supplierID ?? this.supplierID,
     );
   }
+
+  @override
+  bool operator ==(covariant User other) {
+    if (identical(this, other)) return true;
+  
+    return 
+      other.id == id &&
+      other.email == email &&
+      other.password == password &&
+      other.registerType == registerType &&
+      other.iosToken == iosToken &&
+      other.androidToken == androidToken &&
+      other.refreshToken == refreshToken &&
+      other.socialKey == socialKey &&
+      other.imageAvatar == imageAvatar &&
+      other.supplierID == supplierID;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+      email.hashCode ^
+      password.hashCode ^
+      registerType.hashCode ^
+      iosToken.hashCode ^
+      androidToken.hashCode ^
+      refreshToken.hashCode ^
+      socialKey.hashCode ^
+      imageAvatar.hashCode ^
+      supplierID.hashCode;
+  }
 }

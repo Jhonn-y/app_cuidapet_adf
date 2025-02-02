@@ -20,4 +20,17 @@ class UserUpdateDeviceTokenModel extends RequestMapping {
     platform = (data['platform'].toLowerCase() == 'ios' ? PlatformEnum.ios : PlatformEnum.android);
   }
   
+
+  @override
+  bool operator ==(covariant UserUpdateDeviceTokenModel other) {
+    if (identical(this, other)) return true;
+  
+    return 
+      other.userID == userID &&
+      other.token == token &&
+      other.platform == platform;
+  }
+
+  @override
+  int get hashCode => userID.hashCode ^ token.hashCode ^ platform.hashCode;
 }
