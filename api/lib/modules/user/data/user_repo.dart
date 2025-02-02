@@ -39,7 +39,7 @@ class UserRepo implements IUserRepo {
       ]);
 
       final userID = result.insertId;
-      return user.copyWith(id: userID, password: null);
+      return user.copyWith(id: userID, password: '');
     } on MySqlException catch (e) {
       if (e.message.contains('usuario.email_UNIQUE')) {
         logger.error('Email ja utilizado', e);
@@ -88,7 +88,6 @@ class UserRepo implements IUserRepo {
           refreshToken: (userData['refresh_token'] as Blob?)?.toString(),
           imageAvatar: (userData['img_avatar'] as Blob?)?.toString(),
           supplierID: userData['fornecedor_id'] as int,
-          socialKey: userData['social_id'] as String,
         );
       }
     } on MySqlException catch (e) {
@@ -129,7 +128,6 @@ class UserRepo implements IUserRepo {
           refreshToken: (dataMysql['refresh_token'] as Blob?)?.toString(),
           imageAvatar: (dataMysql['img_avatar'] as Blob?)?.toString(),
           supplierID: dataMysql['fornecedor_id'] as int,
-          socialKey: dataMysql['social_id'] as String,
         );
       }
     } on MySqlException catch (e) {
@@ -216,8 +214,7 @@ class UserRepo implements IUserRepo {
           androidToken: (dataMysql['android_token'] as Blob?)?.toString(),
           refreshToken: (dataMysql['refresh_token'] as Blob?)?.toString(),
           imageAvatar: (dataMysql['img_avatar'] as Blob?)?.toString(),
-          supplierID: dataMysql['fornecedor_id'] as int,
-          socialKey: dataMysql['social_id'] as String,
+          supplierID: dataMysql['fornecedor_id'],
         );
       }
     } on MySqlException catch (e) {
@@ -260,8 +257,6 @@ class UserRepo implements IUserRepo {
 
       final query = 'update usuario set $setToken where id = ?';
       await conn.query(query, [deviceToken, id]);
-
-
     } on MySqlException catch (e) {
       logger.error('Erro ao atualizar device token do usuario', e);
       throw DatabaseException();

@@ -92,7 +92,7 @@ class UserService implements IUserService {
 
   void _validateRefreshToken(UserRefreshTokenInputModel model) {
     try {
-      final refreshToken = model.refreshToken.split('');
+      final refreshToken = model.refreshToken.split(' ');
 
       if (refreshToken.length != 2 || refreshToken.first != 'Bearer') {
         log.error('Refresh token invalido');
